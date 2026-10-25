@@ -1,0 +1,540 @@
+/* The whole screen is covered: the editor can't be used until the import ends or is cancelled. */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(5, 7, 10, 0.72);
+  backdrop-filter: blur(10px) saturate(120%);
+  animation: fade 0.25s ease both;
+}
+
+.card {
+  width: min(100%, 460px);
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid var(--border-strong);
+  background: #0d1117;
+  box-shadow:
+    0 30px 90px -30px rgba(0, 0, 0, 0.9),
+    0 40px 120px -50px color-mix(in srgb, var(--accent) 55%, transparent);
+  transition: border-color 0.4s ease;
+  animation: rise 0.45s var(--ease-out) both;
+}
+
+.card[data-stage="done"] {
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.dots {
+  display: flex;
+  gap: 7px;
+}
+
+.dots i {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #ff5f57;
+}
+
+.dots i:nth-child(2) {
+  background: #febc2e;
+}
+
+.dots i:nth-child(3) {
+  background: #28c840;
+}
+
+.barTitle {
+  font:
+    0.8rem var(--font-mono),
+    monospace;
+  color: var(--muted);
+}
+
+/* The animation: a PDF sheet → flowing particles → a page that builds itself */
+
+.stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  height: 184px;
+  border-bottom: 1px solid var(--border);
+  background:
+    radial-gradient(60% 70% at 50% 45%, var(--accent-soft), transparent 70%),
+    radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1.4px) 0 0 / 14px 14px;
+}
+
+.sheet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 96px;
+  height: 124px;
+  padding: 28px 12px 0;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #e6edf3;
+  box-shadow: 0 14px 30px -12px rgba(0, 0, 0, 0.8);
+  transition:
+    opacity 0.5s ease,
+    scale 0.5s var(--ease-out);
+}
+
+.sheet b {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: #ff5f57;
+  font:
+    700 0.55rem var(--font-mono),
+    monospace;
+  color: #fff;
+}
+
+.sheet i {
+  height: 4px;
+  border-radius: 2px;
+  background: #b4bdc8;
+}
+
+/* The scan line sweeping down the sheet while it is read. */
+.beam {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 26px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in srgb, var(--accent) 30%, transparent) 75%,
+    var(--accent) 90%,
+    transparent
+  );
+  animation: scan 1.5s ease-in-out infinite alternate;
+}
+
+.flow {
+  --travel: 50px;
+  position: relative;
+  width: 56px;
+  height: 8px;
+}
+
+.flow span {
+  position: absolute;
+  top: 1px;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  opacity: 0;
+}
+
+.page {
+  position: relative;
+  width: 150px;
+  height: 124px;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid var(--border-strong);
+  background: #0b0f14;
+  transition:
+    border-color 0.4s ease,
+    box-shadow 0.4s ease;
+}
+
+.pageBar {
+  display: flex;
+  gap: 4px;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.pageBar i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--faint);
+}
+
+.pageBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding-top: 10px;
+  background: radial-gradient(60% 60% at 50% 30%, var(--accent-soft), transparent 70%);
+  height: 100%;
+}
+
+.avatar {
+  position: relative;
+  width: 30px;
+  height: 30px;
+}
+
+.halo {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, var(--accent), var(--accent2), transparent 60%, var(--accent));
+  animation: spin 2.4s linear infinite;
+}
+
+.face {
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: #1b222c;
+}
+
+.name {
+  width: 74px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--text);
+}
+
+.role {
+  width: 48px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--faint);
+}
+
+.pills {
+  display: flex;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.pills i {
+  width: 22px;
+  height: 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-strong);
+}
+
+.pills i:first-child {
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
+.lines {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.lines i {
+  width: 104px;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.lines i:last-child {
+  width: 76px;
+}
+
+.live {
+  position: absolute;
+  top: 24px;
+  right: 7px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  font:
+    600 0.6rem var(--font-mono),
+    monospace;
+  color: var(--accent);
+  opacity: 0;
+  scale: 0.6;
+  transition:
+    opacity 0.3s ease 0.15s,
+    scale 0.45s cubic-bezier(0.3, 1.6, 0.5, 1) 0.15s;
+}
+
+.live::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+
+/* Reading: the scan runs, the page waits in the dark. */
+.card[data-stage="reading"] :is(.avatar, .name, .role, .pills i, .lines i) {
+  opacity: 0.12;
+}
+
+/* Thinking: particles flow into the page, which builds itself piece by piece, again and again. */
+.card[data-stage="thinking"] .beam {
+  animation-duration: 2.4s;
+  opacity: 0.6;
+}
+
+.card[data-stage="thinking"] .flow span {
+  animation: flow 1.2s linear infinite;
+}
+
+.card[data-stage="thinking"] .flow span:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.card[data-stage="thinking"] .flow span:nth-child(3) {
+  animation-delay: 0.8s;
+}
+
+.card[data-stage="thinking"] :is(.avatar, .name, .role, .pills i, .lines i) {
+  animation: build 3.6s var(--ease-out) infinite backwards;
+}
+
+.card[data-stage="thinking"] .name {
+  animation-delay: 0.3s;
+}
+
+.card[data-stage="thinking"] .role {
+  animation-delay: 0.55s;
+}
+
+.card[data-stage="thinking"] .pills i:nth-child(1) {
+  animation-delay: 0.8s;
+}
+
+.card[data-stage="thinking"] .pills i:nth-child(2) {
+  animation-delay: 0.92s;
+}
+
+.card[data-stage="thinking"] .pills i:nth-child(3) {
+  animation-delay: 1.04s;
+}
+
+.card[data-stage="thinking"] .lines i:nth-child(1) {
+  animation-delay: 1.25s;
+}
+
+.card[data-stage="thinking"] .lines i:nth-child(2) {
+  animation-delay: 1.4s;
+}
+
+/* Done: the sheet steps back, the page is complete and goes live. */
+.card[data-stage="done"] .sheet {
+  opacity: 0.35;
+  scale: 0.92;
+}
+
+.card[data-stage="done"] .beam {
+  display: none;
+}
+
+.card[data-stage="done"] .page {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  box-shadow: 0 0 30px -8px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.card[data-stage="done"] .live {
+  opacity: 1;
+  scale: 1;
+}
+
+/* The log */
+
+.log {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 112px;
+  padding: 14px 18px 10px;
+  font:
+    0.8rem/1.7 var(--font-mono),
+    monospace;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.dollar {
+  color: var(--accent2);
+}
+
+.ok {
+  color: var(--accent);
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.working {
+  color: var(--muted);
+}
+
+/* Animated dots after the current step */
+.working::before {
+  content: "› ";
+  color: var(--accent);
+}
+
+.working::after {
+  content: "";
+  animation: dots 1.2s steps(4) infinite;
+}
+
+.time {
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px 12px 18px;
+  border-top: 1px solid var(--border);
+}
+
+.note {
+  font-size: 0.78rem;
+  color: var(--faint);
+}
+
+.cancel {
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: none;
+  font: inherit;
+  font-size: 0.82rem;
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.cancel:hover:not(:disabled) {
+  border-color: #ff7b72;
+  color: #ff7b72;
+}
+
+.cancel:disabled {
+  visibility: hidden;
+}
+
+@media (max-width: 420px) {
+  .stage {
+    gap: 8px;
+  }
+
+  .sheet,
+  .page {
+    scale: 0.85;
+  }
+
+  .flow {
+    --travel: 30px;
+    width: 36px;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 16px;
+    scale: 0.97;
+  }
+}
+
+@keyframes scan {
+  from {
+    translate: 0 -26px;
+  }
+  to {
+    translate: 0 124px;
+  }
+}
+
+@keyframes flow {
+  0% {
+    translate: 0 0;
+    opacity: 0;
+  }
+  25%,
+  75% {
+    opacity: 1;
+  }
+  100% {
+    translate: var(--travel) 0;
+    opacity: 0;
+  }
+}
+
+@keyframes build {
+  0% {
+    opacity: 0;
+    translate: 0 4px;
+    scale: 0.9;
+  }
+  12%,
+  82% {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@keyframes dots {
+  0% {
+    content: "";
+  }
+  25% {
+    content: ".";
+  }
+  50% {
+    content: "..";
+  }
+  75% {
+    content: "...";
+  }
+}

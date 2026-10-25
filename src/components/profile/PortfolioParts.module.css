@@ -1,0 +1,173 @@
+/* Kind badge: "● live", "</> code", "¶ paper". */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  font:
+    500 0.72rem var(--font-mono),
+    monospace;
+  color: var(--accent2);
+}
+
+.badge[data-kind="live"] {
+  color: var(--accent);
+}
+
+.badge[data-kind="live"]::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 60%, transparent);
+  animation: pulse 2.4s ease-out infinite;
+}
+
+.badge[data-kind="code"]::before {
+  content: "</>";
+}
+
+.badge[data-kind="paper"] {
+  color: #e3b341;
+}
+
+.badge[data-kind="paper"]::before {
+  content: "¶";
+}
+
+/* Preview area. Sizes inside use cqw (container width), so the drawings scale with the card. */
+.thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  container-type: inline-size;
+  background: #0d1117;
+}
+
+.thumb > * {
+  transition: scale 0.5s var(--ease-out);
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+.placeholder {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font:
+    600 5cqw var(--font-mono),
+    monospace;
+  color: var(--accent);
+  background: radial-gradient(circle at 30% 20%, var(--accent-soft), transparent 70%);
+}
+
+.code {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3cqw;
+  height: 100%;
+  padding: 0 7cqw;
+  background:
+    radial-gradient(circle at 85% 15%, color-mix(in srgb, var(--accent2) 14%, transparent), transparent 55%), #0d1117;
+}
+
+.line {
+  display: flex;
+  align-items: center;
+  gap: 2cqw;
+  height: 2.6cqw;
+}
+
+.number {
+  width: 4cqw;
+  font:
+    3cqw / 1 var(--font-mono),
+    monospace;
+  text-align: right;
+  color: var(--faint);
+}
+
+.line i {
+  height: 100%;
+  border-radius: 1cqw;
+  background: color-mix(in srgb, var(--muted) 45%, transparent);
+}
+
+.line i[data-color="0"] {
+  background: color-mix(in srgb, var(--accent) 70%, transparent);
+}
+
+.line i[data-color="1"] {
+  background: color-mix(in srgb, var(--accent2) 70%, transparent);
+}
+
+.paper {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  background: radial-gradient(circle at 20% 15%, rgba(227, 179, 65, 0.16), transparent 60%), #11161d;
+}
+
+.sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6cqw;
+  width: 42%;
+  aspect-ratio: 1 / 1.3;
+  padding: 5cqw 4cqw;
+  border-radius: 1cqw;
+  background: #f4f1ea;
+  box-shadow: 0 3cqw 6cqw rgba(0, 0, 0, 0.45);
+  rotate: -3deg;
+}
+
+.sheet i {
+  display: block;
+  height: 1.1cqw;
+  border-radius: 1cqw;
+  background: #c9c4b8;
+}
+
+.sheet .title {
+  align-self: center;
+  width: 90%;
+  height: 1.9cqw;
+  background: #2b2f36;
+}
+
+.sheet .authors {
+  align-self: center;
+  width: 46%;
+  margin: 0.6cqw 0 1.6cqw;
+  background: #9a958a;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.4cqw;
+}
+
+.columns > div {
+  display: flex;
+  flex-direction: column;
+  gap: 1.3cqw;
+}
+
+@keyframes pulse {
+  70% {
+    box-shadow: 0 0 0 6px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}

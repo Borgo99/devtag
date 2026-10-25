@@ -1,0 +1,51 @@
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 10px 3px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+  font:
+    500 0.78rem / 1.6 var(--font-mono),
+    monospace;
+  color: var(--muted);
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+}
+
+/* Bigger pills for the Stack section. */
+.large {
+  gap: 10px;
+}
+
+.large .pill {
+  gap: 9px;
+  padding: 6px 14px 6px 12px;
+  font-size: 0.85rem;
+  color: var(--text);
+  transition:
+    border-color 0.25s ease,
+    background 0.25s ease;
+}
+
+.large .pill:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  background: var(--accent-soft);
+}
+
+.large .icon {
+  width: 18px;
+  height: 18px;
+}

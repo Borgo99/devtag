@@ -1,0 +1,39 @@
+.section {
+  width: min(100% - 32px, var(--content));
+  margin: 0 auto;
+  padding: 96px 0 24px;
+  scroll-margin-top: 24px;
+}
+
+.header {
+  margin-bottom: 40px;
+}
+
+.command {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font:
+    500 0.85rem var(--font-mono),
+    monospace;
+  color: var(--muted);
+}
+
+.index {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.dollar {
+  color: var(--accent2);
+}
+
+.title {
+  margin-top: 12px;
+  font-size: clamp(1.9rem, 4.5vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+}

@@ -1,0 +1,43 @@
+.groups {
+  display: grid;
+  margin: 0;
+  border-top: 1px solid var(--border);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 16px;
+  align-items: start;
+  padding: 20px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.label {
+  padding-top: 6px;
+  font:
+    500 0.85rem var(--font-mono),
+    monospace;
+  color: var(--muted);
+}
+
+.label::before {
+  content: "// ";
+  color: var(--accent);
+}
+
+.items {
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 18px 4px;
+  }
+
+  .label {
+    padding-top: 0;
+  }
+}

@@ -1,0 +1,125 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: min(100%, 560px);
+}
+
+.box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 6px 6px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: rgba(13, 17, 23, 0.85);
+  box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.8);
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.box:focus-within {
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
+.box[data-available] {
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 4px var(--accent-soft),
+    0 20px 50px -20px rgba(0, 0, 0, 0.8);
+}
+
+/* The typed name grows in place, so the address reads as one line. */
+.address {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+  font:
+    500 1rem var(--font-mono),
+    monospace;
+  white-space: nowrap;
+  cursor: text;
+}
+
+.protocol,
+.domain {
+  color: var(--faint);
+}
+
+.address input {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: none;
+  font: inherit;
+  color: var(--text);
+}
+
+.address input::placeholder {
+  color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.button {
+  flex: none;
+  height: 44px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(120deg, var(--accent), var(--accent2));
+  font: inherit;
+  font-weight: 600;
+  color: #05070a;
+  cursor: pointer;
+  transition:
+    opacity 0.2s ease,
+    translate 0.2s ease;
+}
+
+.button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.button:hover:not(:disabled) {
+  translate: 0 -1px;
+}
+
+.status {
+  min-height: 1.4em;
+  font:
+    0.8rem var(--font-mono),
+    monospace;
+  color: var(--faint);
+}
+
+.status[data-state="ok"] {
+  color: var(--accent);
+}
+
+.status[data-state="no"] {
+  color: #ff7b72;
+}
+
+@media (max-width: 520px) {
+  .box {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 8px;
+    border-radius: 20px;
+  }
+
+  .address {
+    justify-content: center;
+    height: 42px;
+  }
+
+  .protocol {
+    display: none;
+  }
+}

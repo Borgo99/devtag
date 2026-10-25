@@ -1,0 +1,149 @@
+.timeline {
+  position: relative;
+  display: grid;
+  gap: 20px;
+  padding-left: 32px;
+}
+
+/* Vertical line fading out at the bottom. */
+.timeline::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  bottom: 0;
+  left: 7px;
+  width: 1px;
+  background: linear-gradient(var(--accent), color-mix(in srgb, var(--accent2) 40%, transparent) 60%, transparent);
+}
+
+.entry {
+  position: relative;
+}
+
+.dot {
+  position: absolute;
+  top: 26px;
+  left: -32px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  background: var(--bg);
+}
+
+/* Ongoing entry (no end date): filled and pulsing. */
+.dot[data-current] {
+  background: var(--accent);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 60%, transparent);
+  animation: pulse 2.4s ease-out infinite;
+}
+
+.card {
+  display: grid;
+  gap: 14px;
+  padding: 22px 24px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: rgba(10, 13, 18, 0.72);
+  backdrop-filter: blur(8px);
+  transition:
+    border-color 0.3s ease,
+    background 0.3s ease;
+}
+
+.card:hover {
+  border-color: var(--border-strong);
+  background: rgba(14, 18, 24, 0.82);
+}
+
+.title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.at {
+  color: var(--faint);
+  font-weight: 400;
+}
+
+.org {
+  color: var(--accent);
+}
+
+a.org {
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  transition: background-size 0.3s ease;
+}
+
+a.org:hover {
+  background-size: 100% 1px;
+}
+
+/* Every item starts with a "·"; the one at the start of each line is clipped away. */
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 2px;
+  margin: 6px 0 0 -24px;
+  clip-path: inset(0 0 0 24px);
+  font:
+    0.8rem var(--font-mono),
+    monospace;
+  color: var(--muted);
+}
+
+.meta span::before {
+  content: "·";
+  display: inline-block;
+  width: 24px;
+  text-align: center;
+  color: var(--faint);
+}
+
+.summary {
+  color: var(--muted);
+}
+
+.highlights {
+  display: grid;
+  gap: 6px;
+  font-size: 0.95rem;
+}
+
+.highlights li {
+  position: relative;
+  padding-left: 22px;
+  color: color-mix(in srgb, var(--text) 85%, var(--muted));
+}
+
+.highlights li::before {
+  content: "▹";
+  position: absolute;
+  left: 2px;
+  color: var(--accent);
+}
+
+@media (max-width: 560px) {
+  .timeline {
+    padding-left: 24px;
+  }
+
+  .dot {
+    left: -24px;
+  }
+
+  .card {
+    padding: 18px;
+  }
+}
+
+@keyframes pulse {
+  70% {
+    box-shadow: 0 0 0 10px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}

@@ -1,0 +1,104 @@
+/* Zero-size anchor at the avatar's center. It must not create a stacking
+   context, so icons can go above or below the avatar (z-index 3 / 1 vs 2). */
+.orbit {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+}
+
+/* Ring geometry (uses --rx-max, --clear, --icon from Hero.module.css; --size, --lift from lib/orbit.ts).
+   Rings never come closer than --clear, so icons don't cover the photo. */
+.ring {
+  --rx: max(calc(var(--rx-max) * var(--size)), calc(var(--clear) + var(--icon) * 0.4));
+  --ry: max(calc(var(--rx) * var(--flat)), calc(var(--clear) + var(--lift) * var(--icon)));
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(var(--rx) * 2);
+  height: calc(var(--ry) * 2);
+  translate: -50% -50%;
+  border-radius: 50%;
+  border: 1px dashed rgba(255, 255, 255, 0.09);
+  pointer-events: none;
+  animation: fade-in 1.6s ease 0.4s both;
+}
+
+.item {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--icon);
+  height: var(--icon);
+  translate: -50% -50%;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.chip {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 18%;
+  border-radius: 30%;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(22, 28, 36, 0.95);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  font-size: calc(var(--icon) * 0.36);
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+/* Top skills: bigger, with an accent glow. */
+.item[data-top] {
+  width: calc(var(--icon) * 1.3);
+  height: calc(var(--icon) * 1.3);
+}
+
+.item[data-top] .chip {
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  background:
+    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 70%),
+    rgba(13, 17, 23, 0.92);
+  box-shadow:
+    0 0 26px color-mix(in srgb, var(--accent) 22%, transparent),
+    0 8px 24px rgba(0, 0, 0, 0.4);
+  font-size: calc(var(--icon) * 0.5);
+}
+
+.item:hover .chip {
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  box-shadow: 0 0 28px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.label {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  translate: -50% 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: rgba(10, 13, 18, 0.95);
+  font:
+    500 12px/1.4 var(--font-mono),
+    monospace;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.2s ease,
+    translate 0.2s ease;
+}
+
+.item:hover .label {
+  opacity: 1;
+  translate: -50% 0;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}

@@ -1,0 +1,21 @@
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tags li {
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: 1px dashed var(--border-strong);
+  font:
+    500 0.72rem / 1.6 var(--font-mono),
+    monospace;
+  color: var(--muted);
+}
+
+.tags li::before {
+  content: "#";
+  margin-right: 1px;
+  color: var(--accent);
+}

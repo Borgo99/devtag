@@ -1,0 +1,38 @@
+{
+  "name": "devtag",
+  "version": "0.1.0",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "scripts": {
+    "predev": "node scripts/vendor.mjs",
+    "dev": "next dev",
+    "prebuild": "node scripts/vendor.mjs",
+    "build": "next build",
+    "start": "next start",
+    "test": "node --test test/*.test.ts",
+    "db:migrate": "node --env-file=.env.local scripts/migrate.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "3.1156.0",
+    "better-auth": "1.7.13",
+    "devicon": "2.17.0",
+    "geist": "1.8.2",
+    "next": "16.4.2",
+    "openai": "7.43.0",
+    "pdfjs-dist": "6.4.299",
+    "pg": "8.23.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "sharp": "0.35.5",
+    "simple-icons": "16.35.0",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/pg": "8.23.1",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5"
+  }
+}

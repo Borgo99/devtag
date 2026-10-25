@@ -1,0 +1,108 @@
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.glow {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(38% 32% at 32% 34%, color-mix(in srgb, var(--accent) 13%, transparent), transparent 70%),
+    radial-gradient(34% 30% at 70% 62%, color-mix(in srgb, var(--accent2) 12%, transparent), transparent 70%);
+  filter: blur(30px);
+  animation: drift 28s ease-in-out infinite alternate;
+}
+
+@keyframes drift {
+  to {
+    transform: translate3d(5%, -4%, 0) rotate(10deg) scale(1.1);
+  }
+}
+
+.grid,
+.spotlight {
+  position: absolute;
+  inset: 0;
+  background-size: 28px 28px;
+  background-position: center;
+}
+
+.grid {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.11) 1px, transparent 1.6px);
+  mask-image: radial-gradient(ellipse 75% 65% at 50% 45%, #000 15%, transparent 85%);
+}
+
+/* Accent-colored dots light up around the cursor. */
+.spotlight {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  background-color: color-mix(in srgb, var(--accent) 3%, transparent);
+  background-image: radial-gradient(color-mix(in srgb, var(--accent) 75%, transparent) 1px, transparent 1.6px);
+  mask-image: radial-gradient(240px circle at var(--x, -999px) var(--y, -999px), #000, transparent 100%);
+}
+
+.code {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: min(21vw, 300px);
+  overflow: hidden;
+  font:
+    12px/1.8 var(--font-mono),
+    monospace;
+  white-space: pre;
+  color: var(--faint);
+  opacity: 0.32;
+  /* Fade out at the top, the bottom, and towards the center of the page. */
+  mask-image:
+    linear-gradient(transparent, #000 22%, #000 78%, transparent),
+    linear-gradient(var(--fade-dir), #000 35%, transparent 95%);
+  mask-composite: intersect;
+}
+
+.left {
+  --fade-dir: to right;
+  left: 2.5vw;
+}
+
+.right {
+  --fade-dir: to left;
+  right: 2.5vw;
+}
+
+.scroll {
+  animation: scroll 140s linear infinite;
+}
+
+.right .scroll {
+  animation-duration: 170s;
+  animation-direction: reverse;
+}
+
+@keyframes scroll {
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+.keyword {
+  color: color-mix(in srgb, var(--accent2) 70%, var(--faint));
+}
+
+.str {
+  color: color-mix(in srgb, var(--accent) 60%, var(--faint));
+}
+
+.comment {
+  font-style: italic;
+  opacity: 0.7;
+}
+
+@media (max-width: 1100px) {
+  .code {
+    display: none;
+  }
+}

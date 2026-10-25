@@ -1,0 +1,10 @@
+.about {
+  display: grid;
+  gap: 18px;
+  max-width: 760px;
+  padding-left: 20px;
+  border-left: 2px solid color-mix(in srgb, var(--accent) 50%, transparent);
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  line-height: 1.7;
+  color: color-mix(in srgb, var(--text) 88%, var(--muted));
+}

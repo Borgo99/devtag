@@ -1,0 +1,88 @@
+.list {
+  display: grid;
+  border-top: 1px solid var(--border);
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 16px;
+  padding: 22px 8px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.3s ease;
+}
+
+.item:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.year {
+  padding-top: 3px;
+  font:
+    0.85rem var(--font-mono),
+    monospace;
+  color: var(--accent);
+}
+
+.body {
+  display: grid;
+  gap: 4px;
+}
+
+.body > ul {
+  margin-top: 6px;
+}
+
+.title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.title a:hover {
+  color: var(--accent);
+}
+
+.arrow {
+  display: inline-block;
+  margin-left: 6px;
+  color: var(--faint);
+  transition:
+    translate 0.2s ease,
+    color 0.2s ease;
+}
+
+.title a:hover .arrow {
+  translate: 2px -2px;
+  color: var(--accent);
+}
+
+.description {
+  font-size: 0.95rem;
+  color: color-mix(in srgb, var(--text) 85%, var(--muted));
+}
+
+.authors {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.authors strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.venue {
+  font:
+    italic 0.85rem var(--font-mono),
+    monospace;
+  color: var(--faint);
+}
+
+@media (max-width: 560px) {
+  .item {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 18px 4px;
+  }
+}

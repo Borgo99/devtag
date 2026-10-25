@@ -1,0 +1,119 @@
+:root {
+  --bg: #05070a;
+  --surface: rgba(255, 255, 255, 0.025);
+  --surface-hover: rgba(255, 255, 255, 0.05);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --text: #e6edf3;
+  --muted: #8b96a5;
+  --faint: #566070;
+  /* The site's colors; profile pages set their own on a wrapper (see ProfilePage.tsx) */
+  --accent: #4ade80;
+  --accent2: #38bdf8;
+  /* "Open to work": a status, so the same green on every page, whatever its theme colors */
+  --open: #4ade80;
+  --accent-soft: color-mix(in srgb, var(--accent) 14%, transparent);
+  --radius: 16px;
+  --content: 960px;
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+ol {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Scroll reveal: RevealObserver marks elements below the screen as pending and clears
+   the mark when they scroll into view. Visible by default, so it never depends on JS. */
+.reveal {
+  transition:
+    opacity 0.8s ease var(--delay, 0ms),
+    translate 0.8s var(--ease-out) var(--delay, 0ms);
+}
+
+.reveal[data-pending] {
+  opacity: 0;
+  translate: 0 28px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .reveal[data-pending] {
+    translate: none;
+  }
+}

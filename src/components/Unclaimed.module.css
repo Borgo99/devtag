@@ -1,0 +1,27 @@
+.free {
+  color: var(--accent);
+}
+
+.name {
+  max-width: 100%;
+  margin-top: 8px;
+  font:
+    700 clamp(2.6rem, 11vw, 6rem) / 1.05 var(--font-mono),
+    monospace;
+  letter-spacing: -0.05em;
+  overflow-wrap: anywhere;
+  background: linear-gradient(120deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.address {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.claim {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  background: var(--accent-soft);
+}

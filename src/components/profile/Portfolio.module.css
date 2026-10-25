@@ -1,0 +1,134 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
+  gap: 20px;
+}
+
+.grid > li {
+  display: flex;
+}
+
+.grid > li[data-plain] {
+  grid-column: 1 / -1;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: rgba(10, 13, 18, 0.72);
+  backdrop-filter: blur(8px);
+  overflow: hidden;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    translate 0.3s var(--ease-out);
+}
+
+.card:hover {
+  translate: 0 -4px;
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  box-shadow: 0 24px 60px -24px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+/* Little browser window around the screenshot. */
+.window {
+  margin: 14px 14px 0;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #0d1117;
+  overflow: hidden;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.dots {
+  display: flex;
+  gap: 6px;
+}
+
+.dots i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ff5f57;
+}
+
+.dots i:nth-child(2) {
+  background: #febc2e;
+}
+
+.dots i:nth-child(3) {
+  background: #28c840;
+}
+
+.address {
+  flex: 1;
+  min-width: 0;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  font:
+    0.75rem var(--font-mono),
+    monospace;
+  color: var(--muted);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.open {
+  font-size: 0.85rem;
+  color: var(--muted);
+  transition:
+    color 0.2s ease,
+    translate 0.2s ease;
+}
+
+.card:hover .open {
+  color: var(--accent);
+  translate: 2px -2px;
+}
+
+.card:hover [data-thumb] > * {
+  scale: 1.03;
+}
+
+.body {
+  display: grid;
+  gap: 10px;
+  padding: 18px 22px 22px;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  transition: color 0.2s ease;
+}
+
+.card:hover .name {
+  color: var(--accent);
+}
+
+.description {
+  color: var(--muted);
+  font-size: 0.95rem;
+}

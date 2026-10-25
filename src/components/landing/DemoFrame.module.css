@@ -1,0 +1,92 @@
+.window {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid var(--border-strong);
+  background: #0b0f14;
+  box-shadow:
+    0 40px 120px -40px color-mix(in srgb, var(--accent) 30%, transparent),
+    0 30px 80px -30px rgba(0, 0, 0, 0.9);
+  transition:
+    translate 0.4s var(--ease-out),
+    border-color 0.3s ease;
+}
+
+.window:hover {
+  translate: 0 -4px;
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.dots {
+  display: flex;
+  gap: 7px;
+}
+
+.dots i {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #ff5f57;
+}
+
+.dots i:nth-child(2) {
+  background: #febc2e;
+}
+
+.dots i:nth-child(3) {
+  background: #28c840;
+}
+
+.address {
+  flex: 1;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 4px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  font:
+    0.8rem var(--font-mono),
+    monospace;
+  text-align: center;
+  color: var(--muted);
+}
+
+.open {
+  font:
+    0.8rem var(--font-mono),
+    monospace;
+  color: var(--faint);
+  transition: color 0.2s ease;
+}
+
+.window:hover .open {
+  color: var(--accent);
+}
+
+.box {
+  position: relative;
+  overflow: hidden;
+}
+
+.cover {
+  position: absolute;
+  inset: 0;
+}
+
+/* Drawn at desktop size, scaled down; clicks go to the link around it. */
+.box iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 0;
+  transform-origin: 0 0;
+  pointer-events: none;
+}

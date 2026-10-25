@@ -1,0 +1,17 @@
+node_modules
+.next
+out
+next-env.d.ts
+*.tsbuildinfo
+.vercel
+.DS_Store
+# Copied from node_modules by scripts/vendor.mjs
+src/lib/devicons.generated.json
+public/static/pdf.worker.min.mjs
+# The old placeholder store, no longer used: safe to delete
+.data
+.env*
+!.env.example
+# CVs of real people, for local testing only: never committed (the tests skip them when missing)
+test/cvs/private/
+test/cv-samples/
