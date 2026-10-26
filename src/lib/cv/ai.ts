@@ -123,6 +123,8 @@ export async function cvToConfig(text: string, signal?: AbortSignal) {
       input: text,
       text: { format: zodTextFormat(Page, "portfolio_page") },
       max_output_tokens: 16000,
+      // A CV is personal data: don't keep the answer on OpenAI's side (the privacy policy says so).
+      store: false,
     },
     { signal },
   );

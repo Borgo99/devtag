@@ -1,0 +1,8 @@
+/* Sized by the logo's text: about as tall as its capitals, sitting on the baseline. */
+.mark {
+  display: inline-block;
+  width: auto;
+  height: 1.15em;
+  margin-right: 0.5em;
+  vertical-align: -0.22em;
+}

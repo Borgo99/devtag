@@ -1,0 +1,83 @@
+.footer {
+  width: min(100% - 32px, var(--content));
+  margin: 72px auto 0;
+  padding: 40px 0 32px;
+  border-top: 1px solid var(--border);
+  font:
+    0.8rem var(--font-mono),
+    monospace;
+  color: var(--faint);
+}
+
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 36px 48px;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.logo {
+  margin-bottom: 6px;
+  font:
+    600 0.95rem var(--font-mono),
+    monospace;
+  color: var(--text);
+}
+
+.cursor {
+  color: var(--accent);
+  animation: blink 1.1s steps(1) infinite;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  gap: 28px 48px;
+}
+
+.title {
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.path {
+  color: var(--accent2);
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.links a {
+  transition: color 0.2s ease;
+}
+
+.links a:hover {
+  color: var(--accent);
+}
+
+.company {
+  margin-top: 40px;
+}
+
+@media (max-width: 860px) {
+  .columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}

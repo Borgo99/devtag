@@ -1,0 +1,80 @@
+.spacer {
+  flex: 1;
+}
+
+.page {
+  width: min(100% - 32px, 760px);
+  margin: 0 auto;
+  padding-top: 136px;
+  animation: rise 0.7s var(--ease-out) both;
+}
+
+.command {
+  font:
+    500 0.85rem var(--font-mono),
+    monospace;
+  color: var(--muted);
+}
+
+.dollar {
+  color: var(--accent2);
+}
+
+.title {
+  margin: 10px 0 16px;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+/* The text itself, written as plain HTML in each page. */
+
+.page h2 {
+  margin: 40px 0 12px;
+  font-size: 1.2rem;
+  letter-spacing: -0.02em;
+}
+
+.page p,
+.page li {
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.page p + p,
+.page ul + p {
+  margin-top: 12px;
+}
+
+.page ul {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  padding-left: 20px;
+  list-style: disc;
+}
+
+.page li::marker {
+  color: var(--faint);
+}
+
+.page strong {
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Links in the text; styled links (buttons) keep their own look. */
+.page a:not([class]) {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+  }
+}

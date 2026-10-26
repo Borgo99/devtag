@@ -77,10 +77,6 @@
   padding-top: calc(var(--rx-max) * var(--flat) + var(--icon) - var(--avatar) / 2 + 84px);
 }
 
-.you {
-  font-size: calc(var(--avatar) * 0.24);
-}
-
 .identity {
   gap: 18px;
   max-width: 760px;
@@ -532,38 +528,6 @@
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: -0.04em;
-}
-
-/* Footer */
-
-.footer {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px 24px;
-  width: min(100% - 32px, var(--content));
-  margin: 72px auto 0;
-  padding: 28px 0 40px;
-  border-top: 1px solid var(--border);
-  font:
-    0.8rem var(--font-mono),
-    monospace;
-  color: var(--faint);
-}
-
-.footerLinks {
-  display: flex;
-  gap: 20px;
-}
-
-.footerLinks a {
-  color: var(--muted);
-  transition: color 0.2s ease;
-}
-
-.footerLinks a:hover {
-  color: var(--accent);
 }
 
 @media (max-width: 860px) {

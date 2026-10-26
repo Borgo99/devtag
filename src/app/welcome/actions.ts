@@ -5,7 +5,7 @@ import { currentAccount } from "@/lib/session";
 import { createProfile } from "@/lib/store";
 import { usernameError } from "@/lib/usernames";
 
-/** Claims the chosen name for the signed-in user and creates their page, starting from their Google name. */
+/** Claims the chosen name for the signed-in user and creates their page, starting from the name their sign-in provider gave. */
 export async function claimAction(form: FormData) {
   const account = await currentAccount();
   if (!account) redirect("/login");

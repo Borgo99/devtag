@@ -14,6 +14,15 @@ const protocol = ROOT_DOMAIN?.startsWith("localhost") ? "http" : "https";
 /** The main site: landing, login and editor. */
 export const SITE_URL = ROOT_DOMAIN ? `${protocol}://${ROOT_DOMAIN}` : "/";
 
+/** Who runs devtag.io: shown in the footer and the legal pages. */
+export const COMPANY = {
+  name: "Find srl",
+  address: "Via Luca Marenzio 5, 25062 Concesio (BS), Italy",
+  email: "info@findsrl.com",
+};
+
+export const REPO_URL = "https://github.com/Borgo99/devtag";
+
 export const profileUrl = (username: string) =>
   ROOT_DOMAIN ? `${protocol}://${username}.${ROOT_DOMAIN}` : `/${username}`;
 

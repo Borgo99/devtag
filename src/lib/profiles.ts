@@ -10,15 +10,19 @@ export const DEMO = "demo";
 
 /**
  * The live version of a profile page. `version` changes on every publish: it goes in the share image
- * URLs, because LinkedIn, WhatsApp & co. keep an image as long as its URL doesn't change.
- * Cached per request, so the page and its metadata read the store once.
+ * URLs, because LinkedIn, WhatsApp & co. keep an image as long as its URL doesn't change. `userId` is
+ * undefined for the demo. Cached per request, so the page and its metadata read the store once.
  */
 export const publishedProfile = cache(
-  async (username: string): Promise<{ config: PortfolioConfig; version: string } | undefined> => {
+  async (username: string): Promise<{ config: PortfolioConfig; version: string; userId?: string } | undefined> => {
     if (username === DEMO) return { config: demo, version: "demo" };
     const profile = await getProfile(username);
     if (!profile?.published) return undefined;
-    return { config: profile.published, version: String(Date.parse(profile.publishedAt ?? "") || 0) };
+    return {
+      config: profile.published,
+      version: String(Date.parse(profile.publishedAt ?? "") || 0),
+      userId: profile.userId,
+    };
   },
 );
 

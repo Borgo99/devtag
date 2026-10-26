@@ -91,6 +91,17 @@
   background: #ff7b72;
 }
 
+.visits {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  font:
+    0.76rem var(--font-mono),
+    monospace;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
 .actions {
   display: flex;
   align-items: center;
@@ -306,6 +317,10 @@
 
   .status {
     order: 4;
+  }
+
+  .visits {
+    order: 5;
   }
 }
 

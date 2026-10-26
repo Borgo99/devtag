@@ -5,6 +5,7 @@ import { sample } from "@/components/landing/sample";
 import { currentAccount } from "@/lib/session";
 import { DISPLAY_DOMAIN } from "@/lib/site";
 import { claimAction } from "./actions";
+import { LogoMark } from "@/components/site/LogoMark";
 import s from "../login/login.module.css";
 
 /** After the first sign-in: the user picks the address of their page. */
@@ -28,6 +29,7 @@ export default async function WelcomePage({ searchParams }: Props) {
       <Background config={sample} />
       <main className={s.page}>
         <a href="/" className={s.logo}>
+          <LogoMark />
           devtag<span className={s.cursor}>_</span>
         </a>
 

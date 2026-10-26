@@ -2,15 +2,17 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Background } from "@/components/profile/Background";
 import { sample } from "@/components/landing/sample";
+import { enabledProviders } from "@/lib/auth";
 import { currentAccount } from "@/lib/session";
 import { DISPLAY_DOMAIN } from "@/lib/site";
-import { GoogleButton } from "./GoogleButton";
+import { SignInButtons } from "./SignInButtons";
+import { LogoMark } from "@/components/site/LogoMark";
 import s from "./login.module.css";
 
 export const metadata: Metadata = { title: "Sign in — devtag", robots: { index: false } };
 
 interface Props {
-  /** `username`: the name typed in a claim box. `error`: set by Better Auth when Google sign-in fails. */
+  /** `username`: the name typed in a claim box. `error`: set by Better Auth when sign-in fails. */
   searchParams: Promise<{ username?: string; error?: string }>;
 }
 
@@ -26,6 +28,7 @@ export default async function LoginPage({ searchParams }: Props) {
       <Background config={sample} />
       <main className={s.page}>
         <a href="/" className={s.logo}>
+          <LogoMark />
           devtag<span className={s.cursor}>_</span>
         </a>
 
@@ -50,10 +53,13 @@ export default async function LoginPage({ searchParams }: Props) {
           </h1>
           <p className={s.hint}>New here? Signing in creates your account; you pick your address next.</p>
 
-          <GoogleButton callbackURL={welcome} />
-          {error && <p className={s.error}>Google sign-in didn&apos;t work ({error}). Try again.</p>}
+          <SignInButtons providers={enabledProviders} callbackURL={welcome} />
+          {error && <p className={s.error}>Sign-in didn&apos;t work ({error}). Try again.</p>}
 
-          <p className={s.note}>We only get your name and email from Google, and never post anything.</p>
+          <p className={s.note}>
+            We only get your name, email and picture, and never post anything. By signing in you accept the{" "}
+            <a href="/terms">terms</a> and the <a href="/privacy">privacy policy</a>.
+          </p>
         </div>
       </main>
     </>

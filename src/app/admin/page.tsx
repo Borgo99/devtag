@@ -4,7 +4,8 @@ import { Editor } from "@/components/admin/Editor";
 import { cleanConfig } from "@/lib/clean";
 import { currentAccount } from "@/lib/session";
 import { DISPLAY_DOMAIN, profileUrl } from "@/lib/site";
-import { signOutAction } from "./actions";
+import { visitStats } from "@/lib/store";
+import { saveMatchingAction, signOutAction } from "./actions";
 
 export const metadata: Metadata = { title: "Editor — devtag", robots: { index: false } };
 
@@ -28,6 +29,9 @@ export default async function AdminPage() {
       review={profile.review}
       upToDate={upToDate}
       everPublished={Boolean(profile.published)}
+      visits={profile.published ? await visitStats(profile.userId) : undefined}
+      matching={{ consent: Boolean(profile.companiesConsentAt), location: profile.location ?? "" }}
+      saveMatching={saveMatchingAction}
       signOut={signOutAction}
     />
   );

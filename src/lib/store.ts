@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { randomBytes, randomUUID } from "node:crypto";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { pool } from "./db";
 import type { PortfolioConfig } from "./types";
@@ -19,6 +19,10 @@ export interface Profile {
   review: string[];
   updatedAt: string;
   publishedAt?: string;
+  /** When the user agreed that we share their page with companies hiring for roles close to it. */
+  companiesConsentAt?: string;
+  /** Where the user lives, for matching with companies. Never shown on the page. */
+  location?: string;
 }
 
 interface Row {
@@ -29,6 +33,8 @@ interface Row {
   review: string[];
   updated_at: Date;
   published_at: Date | null;
+  companies_consent_at: Date | null;
+  location: string | null;
 }
 
 const toProfile = (row: Row): Profile => ({
@@ -39,6 +45,8 @@ const toProfile = (row: Row): Profile => ({
   review: row.review,
   updatedAt: row.updated_at.toISOString(),
   publishedAt: row.published_at?.toISOString(),
+  companiesConsentAt: row.companies_consent_at?.toISOString(),
+  location: row.location ?? undefined,
 });
 
 async function one(sql: string, params: unknown[]) {
@@ -67,6 +75,15 @@ export const saveDraft = (userId: string, draft: PortfolioConfig, review: string
 
 export const publish = (userId: string, published: PortfolioConfig) =>
   one("update profiles set published = $2, published_at = now() where user_id = $1 returning *", [userId, published]);
+
+/** The private settings for companies. Consent keeps the time it was first given, until it's withdrawn. */
+export const saveMatching = (userId: string, consent: boolean, location: string | undefined) =>
+  one(
+    `update profiles
+     set companies_consent_at = case when $2 then coalesce(companies_consent_at, now()) end, location = $3
+     where user_id = $1 returning *`,
+    [userId, consent, location ?? null],
+  );
 
 // CV imports
 
@@ -98,6 +115,35 @@ export async function takeCvImport(userId: string): Promise<{ id: string } | { l
 /** Gives an import back when it failed on our side (the AI didn't answer). */
 export async function returnCvImport(id: string) {
   await pool.query("delete from cv_imports where id = $1", [id]);
+}
+
+// Page visits
+
+/**
+ * Counts a visitor of the user's page, once a day. `visitor` (IP address and browser) is only hashed, with
+ * a random salt that changes every day; old salts are deleted, so old hashes can't be linked to anyone.
+ */
+export async function recordVisit(userId: string, visitor: string) {
+  await pool.query("delete from visit_salts where day < current_date");
+  await pool.query("insert into visit_salts (day, salt) values (current_date, $1) on conflict do nothing", [
+    randomBytes(32),
+  ]);
+  await pool.query(
+    `insert into page_visits (user_id, day, visitor)
+     select $1, current_date, sha256(salt || convert_to($1 || $2, 'UTF8')) from visit_salts where day = current_date
+     on conflict do nothing`,
+    [userId, visitor],
+  );
+}
+
+/** Visitors of the user's page: all time, and in the last 7 days (today included). */
+export async function visitStats(userId: string) {
+  const { rows } = await pool.query<{ total: number; week: number }>(
+    `select count(*)::int as total, count(*) filter (where day > current_date - 7)::int as week
+     from page_visits where user_id = $1`,
+    [userId],
+  );
+  return rows[0];
 }
 
 // Photos

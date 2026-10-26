@@ -7,6 +7,7 @@ import { profileBase, publishedProfile, requestOrigin } from "@/lib/profiles";
 import { DISPLAY_DOMAIN } from "@/lib/site";
 import { getProfile } from "@/lib/store";
 import { usernameError } from "@/lib/usernames";
+import { countVisit } from "@/lib/visits";
 
 /** A user's page: andrea.devtag.io (rewritten here by proxy.ts) or devtag.io/andrea. */
 
@@ -31,7 +32,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function UserPage({ params }: Props) {
   const { username } = await params;
   const published = await publishedProfile(username);
-  if (published) return <ProfilePage config={published.config} base={await profileBase(username)} />;
+  if (published) {
+    if (published.userId) await countVisit(published.userId);
+    return <ProfilePage config={published.config} base={await profileBase(username)} />;
+  }
   if (await isFree(username)) return <Unclaimed username={username} />;
   notFound();
 }

@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { PortfolioConfig } from "@/lib/types";
 import { cleanConfig, publishProblems } from "@/lib/clean";
+import { LogoMark } from "@/components/site/LogoMark";
+import { CompaniesSection, type Matching } from "./CompaniesSection";
 import { CvImport } from "./CvImport";
 import { Preview } from "./Preview";
 import { Sections, type SectionId } from "./Sections";
@@ -17,6 +19,10 @@ interface Props {
   /** The live page exists and matches the draft. */
   upToDate: boolean;
   everPublished: boolean;
+  /** Visitors of the live page: all time, and in the last 7 days. */
+  visits?: { total: number; week: number };
+  matching: Matching;
+  saveMatching: (matching: Matching) => Promise<boolean>;
   signOut: () => Promise<void>;
 }
 
@@ -47,7 +53,18 @@ function filledSections(c: PortfolioConfig): SectionId[] {
  * The admin panel: the form on the left, the live preview on the right. Every change is saved as a
  * draft after a short pause; Publish copies the draft to the public page.
  */
-export function Editor({ address, pageUrl, draft, review: initialReview, upToDate, everPublished, signOut }: Props) {
+export function Editor({
+  address,
+  pageUrl,
+  draft,
+  review: initialReview,
+  upToDate,
+  everPublished,
+  visits,
+  matching,
+  saveMatching,
+  signOut,
+}: Props) {
   const [config, setConfig] = useState(draft);
   const [review, setReview] = useState(initialReview);
   const [save, setSave] = useState<SaveState>("saved");
@@ -149,6 +166,7 @@ export function Editor({ address, pageUrl, draft, review: initialReview, upToDat
     <div className={s.shell}>
       <header className={s.top}>
         <a href="/" className={s.logo}>
+          <LogoMark />
           devtag<span className={s.cursor}>_</span>
         </a>
         <a
@@ -165,6 +183,11 @@ export function Editor({ address, pageUrl, draft, review: initialReview, upToDat
         <span className={s.status} data-state={save === "saved" && live.upToDate ? "live" : save}>
           {status}
         </span>
+        {visits && (
+          <span className={s.visits} title="Visitors of your live page, each counted once a day. Bots are left out.">
+            {visits.total} {visits.total === 1 ? "visitor" : "visitors"} · {visits.week} this week
+          </span>
+        )}
         <div className={s.actions}>
           <div className={s.tabs} role="group" aria-label="View">
             {(["edit", "preview"] as const).map((v) => (
@@ -199,6 +222,7 @@ export function Editor({ address, pageUrl, draft, review: initialReview, upToDat
             update={update}
             review={review}
             reviewed={(id) => setReview((r) => r.filter((x) => x !== id))}
+            companies={<CompaniesSection initial={matching} save={saveMatching} />}
           />
         </div>
         <div className={s.previewPane}>

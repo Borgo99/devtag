@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSetTypedName } from "./YouAvatar";
 import s from "./ClaimBox.module.css";
 
 type Check = { state: "empty" } | { state: "checking" } | { state: "done"; available: boolean; error?: string };
@@ -9,6 +10,8 @@ type Check = { state: "empty" } | { state: "checking" } | { state: "done"; avail
 export function ClaimBox({ domain }: { domain: string }) {
   const [name, setName] = useState("");
   const [check, setCheck] = useState<Check>({ state: "empty" });
+  // On the landing, the profile picture at the top shows the initials of what's typed here.
+  const setTypedName = useSetTypedName();
 
   useEffect(() => {
     if (!name) return setCheck({ state: "empty" });
@@ -49,7 +52,11 @@ export function ClaimBox({ domain }: { domain: string }) {
             autoCapitalize="none"
             autoComplete="off"
             spellCheck={false}
-            onChange={(e) => setName(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
+            onChange={(e) => {
+              const next = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "");
+              setName(next);
+              setTypedName?.(next);
+            }}
           />
           <span className={s.domain}>.{domain}</span>
         </label>

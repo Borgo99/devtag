@@ -12,7 +12,10 @@ import { RevealObserver } from "@/components/profile/RevealObserver";
 import { ClaimBox } from "@/components/landing/ClaimBox";
 import { DemoFrame } from "@/components/landing/DemoFrame";
 import { HiringData } from "@/components/landing/HiringData";
+import { TypedNameProvider, YouAvatar } from "@/components/landing/YouAvatar";
 import { sample } from "@/components/landing/sample";
+import { SiteFooter } from "@/components/site/SiteFooter";
+import { LogoMark } from "@/components/site/LogoMark";
 import hero from "@/components/profile/Hero.module.css";
 import avatar from "@/components/profile/Avatar.module.css";
 import s from "@/components/landing/Landing.module.css";
@@ -60,6 +63,7 @@ export default function Landing() {
 
       <header className={s.nav}>
         <a href="#" className={s.logo} aria-label="devtag, back to top">
+          <LogoMark />
           devtag<span className={s.cursor}>_</span>
         </a>
         <nav className={s.menu} aria-label="Sections">
@@ -67,6 +71,7 @@ export default function Landing() {
           <a href="#why">Why</a>
           <a href="#demo">Demo</a>
           <a href="#features">Features</a>
+          <a href="/companies">For companies</a>
         </nav>
         <a href="/login" className={s.signIn}>
           Sign in
@@ -76,194 +81,185 @@ export default function Landing() {
         </a>
       </header>
 
-      <main>
-        <section className={`${hero.hero} ${s.hero}`} style={{ "--lift-max": outerRing.lift } as CSSProperties}>
-          <div className={hero.center}>
-            <Orbit skills={[...top, ...rest]} topCount={top.length} />
-            <div className={avatar.avatar}>
-              <div className={avatar.halo} />
-              <div className={avatar.face}>
-                <span className={`${avatar.fallback} ${s.you}`} role="img" aria-label="You">
-                  you<span className={avatar.cursor}>_</span>
-                </span>
+      <TypedNameProvider>
+        <main>
+          <section className={`${hero.hero} ${s.hero}`} style={{ "--lift-max": outerRing.lift } as CSSProperties}>
+            <div className={hero.center}>
+              <Orbit skills={[...top, ...rest]} topCount={top.length} />
+              <div className={avatar.avatar}>
+                <div className={avatar.halo} />
+                <div className={avatar.face}>
+                  <YouAvatar />
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className={hero.below}>
-            <div className={`${hero.identity} ${s.identity}`} id="claim">
-              <p className={hero.role}>
-                <span className={hero.prompt} aria-hidden>
-                  &gt;
-                </span>
-                <span className={hero.typed} style={{ "--chars": TAGLINE.length } as CSSProperties}>
-                  {TAGLINE}
-                </span>
-                <span className={hero.caret} aria-hidden />
-              </p>
-              <h1 className={s.title}>
-                The portfolio you&apos;d build <span className={s.nowrap}>if you had a free week.</span>
-              </h1>
-              <p className={s.lead}>
-                Drop your CV and get a page like this one at <strong>{you}</strong>: your skills in orbit, a page for
-                every project, and link previews that look great on LinkedIn.
-              </p>
-              <ClaimBox domain={DISPLAY_DOMAIN} />
-              <a href="#demo" className={s.example}>
-                or see an example page ↓
-              </a>
-            </div>
-          </div>
-        </section>
-
-        <Section id="how" index={1} command="devtag import cv.pdf" title="From PDF to page in two minutes">
-          <ol className={s.steps}>
-            <li className={`${s.step} reveal`}>
-              <div className={`${s.visual} ${s.dropVisual}`} aria-hidden>
-                <span className={s.zone}>drop your CV here</span>
-                <span className={s.file}>
-                  <b>PDF</b>
-                  <i />
-                  <i />
-                  <i />
-                </span>
-              </div>
-              <h3>Drop your CV</h3>
-              <p>
-                Any PDF with text, sidebars and two-column layouts included. Your browser reads it; the file stays with
-                you.
-              </p>
-            </li>
-            <li className={`${s.step} reveal`} style={{ "--delay": "80ms" } as CSSProperties}>
-              <div className={`${s.visual} ${s.term}`} aria-hidden>
-                <p>
-                  <span className={s.dollar}>$</span> devtag import cv.pdf
+            <div className={hero.below}>
+              <div className={`${hero.identity} ${s.identity}`} id="claim">
+                <p className={hero.role}>
+                  <span className={hero.prompt} aria-hidden>
+                    &gt;
+                  </span>
+                  <span className={hero.typed} style={{ "--chars": TAGLINE.length } as CSSProperties}>
+                    {TAGLINE}
+                  </span>
+                  <span className={hero.caret} aria-hidden />
                 </p>
-                <p className={s.line}>✓ 2 pages · two columns</p>
-                <p className={s.line}>✓ 4 jobs · 2 degrees</p>
-                <p className={s.line}>✓ 18 skills · 6 projects</p>
+                <h1 className={s.title}>
+                  The portfolio you&apos;d build <span className={s.nowrap}>if you had a free week.</span>
+                </h1>
+                <p className={s.lead}>
+                  Drop your CV and get a page like this one at <strong>{you}</strong>: your skills in orbit, a page for
+                  every project, and link previews that look great on LinkedIn.
+                </p>
+                <ClaimBox domain={DISPLAY_DOMAIN} />
+                <a href="#demo" className={s.example}>
+                  or see an example page ↓
+                </a>
               </div>
-              <h3>Your page fills itself in</h3>
-              <p>An AI sorts the text into jobs, projects, education and skills, and every skill finds its logo.</p>
-            </li>
-            <li className={`${s.step} reveal`} style={{ "--delay": "160ms" } as CSSProperties}>
-              <div className={`${s.visual} ${s.site}`} aria-hidden>
-                <span className={s.siteBar}>
-                  <i />
-                  <i />
-                  <i />
-                  <span>{you}</span>
-                </span>
-                <span className={s.siteBody}>
-                  <span className={s.miniAvatar} />
-                  <span className={s.miniName} />
-                  <span className={s.miniRole} />
-                  <span className={s.miniPills}>
+            </div>
+          </section>
+
+          <Section id="how" index={1} command="devtag import cv.pdf" title="From PDF to page in two minutes">
+            <ol className={s.steps}>
+              <li className={`${s.step} reveal`}>
+                <div className={`${s.visual} ${s.dropVisual}`} aria-hidden>
+                  <span className={s.zone}>drop your CV here</span>
+                  <span className={s.file}>
+                    <b>PDF</b>
                     <i />
                     <i />
                     <i />
                   </span>
-                </span>
-                <span className={s.live}>live</span>
-              </div>
-              <h3>Check it, then publish</h3>
-              <p>Fix anything in the editor with a live preview beside it. One click and it&apos;s online.</p>
-            </li>
-          </ol>
-        </Section>
-
-        <Section
-          id="why"
-          index={2}
-          command="grep portfolio hiring-managers.csv"
-          title="Your work speaks louder than your degree"
-        >
-          <HiringData />
-        </Section>
-
-        <Section id="demo" index={3} command={`open demo.${DISPLAY_DOMAIN}`} title="See a page in action">
-          <div className="reveal">
-            <DemoFrame src={`/${DEMO}`} href={profileUrl(DEMO)} address={`demo.${DISPLAY_DOMAIN}`} />
-          </div>
-          <p className={s.caption}>
-            Nora is made up; the page is real: the same template every profile gets. Click to explore it.
-          </p>
-        </Section>
-
-        <Section id="features" index={4} command="ls features/" title="Everything a recruiter clicks on">
-          <ul className={s.features}>
-            <li className={`${s.feature} reveal`}>
-              <span className={s.logos} aria-hidden>
-                {logos.map((logo) => (
-                  <span key={logo.name}>
-                    <SkillIcon skill={logo} />
-                  </span>
-                ))}
-              </span>
-              <h3>3,500+ logos, found by name</h3>
-              <p>Type TypeScript, k8s or golang: the logo joins the orbit around your photo.</p>
-            </li>
-            {[
-              {
-                icon: STROKE.page,
-                title: "A page for every project",
-                text: "Each project gets its own link to share, with its stack, highlights and screenshot.",
-              },
-              {
-                icon: STROKE.share,
-                title: "Link previews that sell",
-                text: "Share your page and it shows a card with your photo, role and top skills.",
-              },
-              {
-                icon: STROKE.globe,
-                title: `yourname.${DISPLAY_DOMAIN}`,
-                text: "A short address to put on your CV, your GitHub and your LinkedIn.",
-              },
-              {
-                icon: STROKE.palette,
-                title: "Your colors",
-                text: "Pick two colors: every glow, gradient and preview image follows.",
-              },
-              {
-                icon: STROKE.bolt,
-                title: "Fast and accessible",
-                text: "Rendered on the server, readable without JavaScript, calm for people who prefer less motion.",
-              },
-            ].map((feature, i) => (
-              <li
-                key={feature.title}
-                className={`${s.feature} reveal`}
-                style={{ "--delay": `${((i + 1) % 3) * 80}ms` } as CSSProperties}
-              >
-                <span className={s.icon} aria-hidden>
-                  <Glyph d={feature.icon} />
-                </span>
-                <h3>{feature.title}</h3>
-                <p>{feature.text}</p>
+                </div>
+                <h3>Drop your CV</h3>
+                <p>
+                  Any PDF with text, sidebars and two-column layouts included. Your browser reads it; the file stays
+                  with you.
+                </p>
               </li>
-            ))}
-          </ul>
-        </Section>
+              <li className={`${s.step} reveal`} style={{ "--delay": "80ms" } as CSSProperties}>
+                <div className={`${s.visual} ${s.term}`} aria-hidden>
+                  <p>
+                    <span className={s.dollar}>$</span> devtag import cv.pdf
+                  </p>
+                  <p className={s.line}>✓ 2 pages · two columns</p>
+                  <p className={s.line}>✓ 4 jobs · 2 degrees</p>
+                  <p className={s.line}>✓ 18 skills · 6 projects</p>
+                </div>
+                <h3>Your page fills itself in</h3>
+                <p>An AI sorts the text into jobs, projects, education and skills, and every skill finds its logo.</p>
+              </li>
+              <li className={`${s.step} reveal`} style={{ "--delay": "160ms" } as CSSProperties}>
+                <div className={`${s.visual} ${s.site}`} aria-hidden>
+                  <span className={s.siteBar}>
+                    <i />
+                    <i />
+                    <i />
+                    <span>{you}</span>
+                  </span>
+                  <span className={s.siteBody}>
+                    <span className={s.miniAvatar} />
+                    <span className={s.miniName} />
+                    <span className={s.miniRole} />
+                    <span className={s.miniPills}>
+                      <i />
+                      <i />
+                      <i />
+                    </span>
+                  </span>
+                  <span className={s.live}>live</span>
+                </div>
+                <h3>Check it, then publish</h3>
+                <p>Fix anything in the editor with a live preview beside it. One click and it&apos;s online.</p>
+              </li>
+            </ol>
+          </Section>
 
-        <section className={`${s.final} reveal`}>
-          <p className={s.command}>
-            <span className={s.dollar}>$</span> whoami
-          </p>
-          <h2 className={s.finalTitle}>Your name is still free.</h2>
-          <ClaimBox domain={DISPLAY_DOMAIN} />
-        </section>
-      </main>
+          <Section
+            id="why"
+            index={2}
+            command="grep portfolio hiring-managers.csv"
+            title="Your work speaks louder than your degree"
+          >
+            <HiringData />
+          </Section>
 
-      <footer className={s.footer}>
-        <a href="#" className={s.logo}>
-          devtag<span className={s.cursor}>_</span>
-        </a>
-        <span className={s.footerLinks}>
-          <a href={profileUrl(DEMO)}>Demo</a>
-          <a href="/login">Sign in</a>
-        </span>
-        <span>© {new Date().getFullYear()} devtag</span>
-      </footer>
+          <Section id="demo" index={3} command={`open demo.${DISPLAY_DOMAIN}`} title="See a page in action">
+            <div className="reveal">
+              <DemoFrame src={`/${DEMO}`} href={profileUrl(DEMO)} address={`demo.${DISPLAY_DOMAIN}`} />
+            </div>
+            <p className={s.caption}>
+              Nora is made up; the page is real: the same template every profile gets. Click to explore it.
+            </p>
+          </Section>
+
+          <Section id="features" index={4} command="ls features/" title="Everything a recruiter clicks on">
+            <ul className={s.features}>
+              <li className={`${s.feature} reveal`}>
+                <span className={s.logos} aria-hidden>
+                  {logos.map((logo) => (
+                    <span key={logo.name}>
+                      <SkillIcon skill={logo} />
+                    </span>
+                  ))}
+                </span>
+                <h3>3,500+ logos, found by name</h3>
+                <p>Type TypeScript, k8s or golang: the logo joins the orbit around your photo.</p>
+              </li>
+              {[
+                {
+                  icon: STROKE.page,
+                  title: "A page for every project",
+                  text: "Each project gets its own link to share, with its stack, highlights and screenshot.",
+                },
+                {
+                  icon: STROKE.share,
+                  title: "Link previews that sell",
+                  text: "Share your page and it shows a card with your photo, role and top skills.",
+                },
+                {
+                  icon: STROKE.globe,
+                  title: `yourname.${DISPLAY_DOMAIN}`,
+                  text: "A short address to put on your CV, your GitHub and your LinkedIn.",
+                },
+                {
+                  icon: STROKE.palette,
+                  title: "Your colors",
+                  text: "Pick two colors: every glow, gradient and preview image follows.",
+                },
+                {
+                  icon: STROKE.bolt,
+                  title: "Fast and accessible",
+                  text: "Rendered on the server, readable without JavaScript, calm for people who prefer less motion.",
+                },
+              ].map((feature, i) => (
+                <li
+                  key={feature.title}
+                  className={`${s.feature} reveal`}
+                  style={{ "--delay": `${((i + 1) % 3) * 80}ms` } as CSSProperties}
+                >
+                  <span className={s.icon} aria-hidden>
+                    <Glyph d={feature.icon} />
+                  </span>
+                  <h3>{feature.title}</h3>
+                  <p>{feature.text}</p>
+                </li>
+              ))}
+            </ul>
+          </Section>
+
+          <section className={`${s.final} reveal`}>
+            <p className={s.command}>
+              <span className={s.dollar}>$</span> whoami
+            </p>
+            <h2 className={s.finalTitle}>Your name is still free.</h2>
+            <ClaimBox domain={DISPLAY_DOMAIN} />
+          </section>
+        </main>
+      </TypedNameProvider>
+
+      <SiteFooter />
 
       <RevealObserver />
     </>

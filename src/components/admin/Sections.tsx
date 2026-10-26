@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import type { Education, Job, Link, PortfolioConfig, Project, Publication } from "@/lib/types";
 import { PORTFOLIO_MAX } from "@/lib/portfolio";
 import { slugify } from "@/lib/text";
@@ -19,6 +20,8 @@ interface Props {
   update: (patch: Partial<PortfolioConfig>) => void;
   review: string[];
   reviewed: (id: SectionId) => void;
+  /** The private Companies section, placed after Open to work. */
+  companies: ReactNode;
 }
 
 const DATE = /^\d{4}(-(0[1-9]|1[0-2]))?$/;
@@ -27,7 +30,7 @@ const LINK_TYPES = ["github", "linkedin", "email", "website", "cv", "x", "gitlab
 
 const at = (role?: string, org?: string) => [role, org].filter(Boolean).join(" @ ");
 
-export function Sections({ config, update, review, reviewed }: Props) {
+export function Sections({ config, update, review, reviewed, companies }: Props) {
   const { profile } = config;
   const featured = [...(config.projects ?? []), ...(config.publications ?? [])].filter((p) => p.portfolio).length;
   const section = (id: SectionId) => ({ review: review.includes(id), onReviewed: () => reviewed(id) });
@@ -121,6 +124,8 @@ export function Sections({ config, update, review, reviewed }: Props) {
           </>
         )}
       </Section>
+
+      {companies}
 
       <Section title="Links" count={config.links?.length} {...section("links")}>
         <datalist id="link-types">

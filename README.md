@@ -1,4 +1,9 @@
-# devtag
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="public/brand/logo.svg">
+    <img src="public/brand/logo-light.svg" alt="devtag" height="48">
+  </picture>
+</h1>
 
 **The portfolio you'd build if you had a free week.**
 
@@ -22,6 +27,8 @@ Developers drop their CV, review what it filled in, and publish a portfolio page
 - **A page for every project,** with its own link and its own share image.
 - **Link previews** (Open Graph) made from your page: photo, role, top skills.
 - **Open to work and seniority:** a green ring on your photo, job types, work mode and availability, plus a "Senior · 6+ years" badge.
+- **Visitor counts** in the editor: each visitor counted once a day, bots left out, with no cookies and no stored IP addresses.
+- **A private Companies section:** developers can agree that devtag shares their page with companies hiring for roles close to it, and add where they live. None of it shows on the page.
 - **Your own subdomain** (`yourname.devtag.io`), with a path fallback (`/yourname`) where subdomains aren't set up.
 - **An editor with a live preview** on desktop and phone sizes. Drafts save as you type; Publish makes them live.
 - **Two theme colors** that every glow, gradient and preview image follows.
@@ -40,7 +47,7 @@ Each account gets 3 imports a day, and the whole site 500, so the AI bill stays 
 | Part      | What                                                                                               |
 | --------- | -------------------------------------------------------------------------------------------------- |
 | App       | [Next.js 16](https://nextjs.org) (App Router), React 19, TypeScript, CSS Modules                   |
-| Login     | [Better Auth](https://www.better-auth.com), inside the app, with Google                            |
+| Login     | [Better Auth](https://www.better-auth.com), inside the app, with GitHub, Google and LinkedIn       |
 | Database  | [Neon](https://neon.com) Postgres                                                                  |
 | Photos    | AWS S3 behind CloudFront. Every upload is re-encoded with [sharp](https://sharp.pixelplumbing.com) |
 | CV import | [pdf.js](https://mozilla.github.io/pdf.js/) in the browser, OpenAI Structured Outputs              |
@@ -48,7 +55,7 @@ Each account gets 3 imports a day, and the whole site 500, so the AI bill stays 
 
 ## Run it locally
 
-You need **Node.js 22+** and accounts with Neon, Google Cloud, AWS, and OpenAI (only for the CV import). All have free tiers, and S3 costs pennies.
+You need **Node.js 22+** and accounts with Neon, AWS, OpenAI (only for the CV import), and at least one sign-in provider: GitHub, Google Cloud or LinkedIn. All have free tiers, and S3 costs pennies.
 
 ```bash
 git clone <this repo> devtag && cd devtag
@@ -60,19 +67,21 @@ npm run dev                  # http://localhost:3000
 
 ### Configuration (`.env.local`)
 
-| Variable                                     | Where it comes from                                                                                                                              |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `BETTER_AUTH_SECRET`                         | Any random string: `openssl rand -base64 32`                                                                                                     |
-| `BETTER_AUTH_URL`                            | The site's address: `http://localhost:3000` locally                                                                                              |
-| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`   | Google Cloud → Google Auth Platform → Clients → a **Web application** client, with redirect URI `http://localhost:3000/api/auth/callback/google` |
-| `DATABASE_URL`, `DATABASE_URL_UNPOOLED`      | Neon → Connect: the pooled string (with `-pooler`), and the direct one (pooling off), used by migrations                                         |
-| `AWS_REGION`, `S3_BUCKET`                    | A **private** S3 bucket (Block all public access: on)                                                                                            |
-| `PHOTOS_URL`                                 | A CloudFront distribution on that bucket, with Origin Access Control: `https://xxxx.cloudfront.net`                                              |
-| `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` | An IAM user allowed only `s3:PutObject` and `s3:DeleteObject` on `arn:aws:s3:::<bucket>/photos/*`                                                |
-| `OPENAI_API_KEY`, `OPENAI_MODEL`             | Optional: the CV import says it isn't set up without a key. The model defaults to `gpt-6-luna`                                                   |
-| `NEXT_PUBLIC_ROOT_DOMAIN`                    | Optional: `devtag.io` turns on subdomains. Leave it empty for `/yourname` paths, or use `localhost:3000` to try `yourname.localhost:3000`        |
+| Variable                                       | Where it comes from                                                                                                                                                                        |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `BETTER_AUTH_SECRET`                           | Any random string: `openssl rand -base64 32`                                                                                                                                               |
+| `BETTER_AUTH_URL`                              | The site's address: `http://localhost:3000` locally                                                                                                                                        |
+| `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`     | GitHub → Settings → Developer settings → **OAuth Apps** → New, with callback URL `http://localhost:3000/api/auth/callback/github`                                                          |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`     | Google Cloud → Google Auth Platform → Clients → a **Web application** client, with redirect URI `http://localhost:3000/api/auth/callback/google`                                           |
+| `LINKEDIN_CLIENT_ID`, `LINKEDIN_CLIENT_SECRET` | LinkedIn Developers → an app (tied to a company page) with the product **Sign In with LinkedIn using OpenID Connect**, and redirect URL `http://localhost:3000/api/auth/callback/linkedin` |
+| `DATABASE_URL`, `DATABASE_URL_UNPOOLED`        | Neon → Connect: the pooled string (with `-pooler`), and the direct one (pooling off), used by migrations                                                                                   |
+| `AWS_REGION`, `S3_BUCKET`                      | A **private** S3 bucket (Block all public access: on)                                                                                                                                      |
+| `PHOTOS_URL`                                   | A CloudFront distribution on that bucket, with Origin Access Control: `https://xxxx.cloudfront.net`                                                                                        |
+| `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`   | An IAM user allowed only `s3:PutObject` and `s3:DeleteObject` on `arn:aws:s3:::<bucket>/photos/*`                                                                                          |
+| `OPENAI_API_KEY`, `OPENAI_MODEL`               | Optional: the CV import says it isn't set up without a key. The model defaults to `gpt-6-luna`                                                                                             |
+| `NEXT_PUBLIC_ROOT_DOMAIN`                      | Optional: `devtag.io` turns on subdomains. Leave it empty for `/yourname` paths, or use `localhost:3000` to try `yourname.localhost:3000`                                                  |
 
-While your Google app is in "Testing", only the test users you add in Google Cloud can sign in.
+Each sign-in provider is optional: its button shows only when both its keys are set. Signing in with another provider under the same verified email opens the same account. While your Google app is in "Testing", only the test users you add in Google Cloud can sign in.
 
 ### Scripts
 
@@ -91,11 +100,12 @@ src/
     [username]/           a published page, its project pages and share images
     admin/                the editor and its preview
     api/                  CV import, photo upload, saving and publishing, login (auth/)
-    login/, welcome/      sign-in with Google, then picking your address
+    login/, welcome/      sign-in (GitHub, Google, LinkedIn), then picking your address
   components/
     profile/              the portfolio template every page is built from
     admin/                the editor
     landing/              landing page pieces
+    site/                 the site footer, and the layout of the companies, privacy and terms pages
   lib/                    config types and cleanup, data store, login, icons, CV reader (cv/), photos
   demo/                   the demo profile
   proxy.ts                serves yourname.devtag.io from the /yourname routes
@@ -109,7 +119,7 @@ test/                     tests, and CVs to test against (made-up people)
 1. Import the repository in Vercel, and set the functions' region next to your database (e.g. `fra1` for Neon in Frankfurt).
 2. Add the environment variables, with `BETTER_AUTH_URL` set to your domain. For S3, prefer [Vercel's OIDC federation](https://vercel.com/docs/oidc/aws) with `AWS_ROLE_ARN` over long-lived access keys.
 3. **Subdomains:** add your domain and its wildcard (`*.yourdomain`) in Vercel, which needs the domain's DNS on Vercel. Then set `NEXT_PUBLIC_ROOT_DOMAIN`.
-4. **Google:** add your domain as an authorized origin, and `https://yourdomain/api/auth/callback/google` as a redirect URI. Publish the app when you're ready for everyone to sign in.
+4. **Sign-in providers:** add `https://yourdomain/api/auth/callback/<provider>` as the callback or redirect URL of each one (`github`, `google`, `linkedin`). For Google, also add your domain as an authorized origin, and publish the app when you're ready for everyone to sign in. A GitHub OAuth App takes a single callback URL, so use one app for local development and one for production.
 
 ## Contributing
 
@@ -121,7 +131,7 @@ Please don't open public issues for vulnerabilities. Report them privately throu
 
 ## License
 
-Copyright © 2026 Andrea Borghesi.
+Copyright © 2026 Find srl.
 
 devtag is free software under the [GNU Affero General Public License v3.0](LICENSE): you can use, study, change and share it. If you run a modified version as a service for others, you must publish your changes under the same license.
 
