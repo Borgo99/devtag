@@ -117,7 +117,7 @@ test/                     tests, and CVs to test against (made-up people)
 ## Deploy on Vercel
 
 1. Import the repository in Vercel, and set the functions' region next to your database (e.g. `fra1` for Neon in Frankfurt).
-2. Add the environment variables, with `BETTER_AUTH_URL` set to your domain. For S3, prefer [Vercel's OIDC federation](https://vercel.com/docs/oidc/aws) with `AWS_ROLE_ARN` over long-lived access keys.
+2. Add the environment variables, with `BETTER_AUTH_URL` set to your domain. For S3, use the same IAM user's keys: they can only add and delete photos.
 3. **Subdomains:** add your domain and its wildcard (`*.yourdomain`) in Vercel, which needs the domain's DNS on Vercel. Then set `NEXT_PUBLIC_ROOT_DOMAIN`.
 4. **Sign-in providers:** add `https://yourdomain/api/auth/callback/<provider>` as the callback or redirect URL of each one (`github`, `google`, `linkedin`). For Google, also add your domain as an authorized origin, and publish the app when you're ready for everyone to sign in. A GitHub OAuth App takes a single callback URL, so use one app for local development and one for production.
 

@@ -35,6 +35,8 @@ const devicons = JSON.parse(fs.readFileSync(path.join(DEVICON, "devicon.json"), 
 });
 fs.writeFileSync(path.join(root, "src/lib/devicons.generated.json"), JSON.stringify(devicons));
 
+// public/static holds only git-ignored files, so a fresh clone (e.g. on Vercel) doesn't have it.
+fs.mkdirSync(path.join(root, "public/static"), { recursive: true });
 fs.copyFileSync(
   path.join(modules, "pdfjs-dist/build/pdf.worker.min.mjs"),
   path.join(root, "public/static/pdf.worker.min.mjs"),
