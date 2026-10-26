@@ -48,10 +48,10 @@ export function ProfilePage({ config, base }: Props) {
       command: "ls ~/portfolio",
       title: "Portfolio",
       content:
-        config.portfolioStyle === "compact" ? (
-          <PortfolioCompact entries={portfolio} />
-        ) : (
+        config.portfolioStyle === "large" ? (
           <Portfolio entries={portfolio} />
+        ) : (
+          <PortfolioCompact entries={portfolio} />
         ),
     },
     profile.about && {

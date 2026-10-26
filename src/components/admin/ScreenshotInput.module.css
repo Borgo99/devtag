@@ -1,0 +1,33 @@
+.screenshot {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Like the card's preview: 16:10, the top of the image. */
+.preview {
+  flex: none;
+  width: 128px;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  background: #0b0f14;
+}
+
+.preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+.preview span {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font:
+    0.7rem var(--font-mono),
+    monospace;
+  color: var(--faint);
+}

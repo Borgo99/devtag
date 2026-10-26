@@ -22,6 +22,8 @@ export function ProjectPage({ config, project, base }: Props) {
     project.url && { href: project.url, label: "Live" },
     project.repo && { href: project.repo, label: "Source code" },
   ].filter((link) => !!link);
+  // The screenshot, or the preview image read from the live site (lib/portfolio.ts explains the check).
+  const image = project.image ?? (project.site?.url === project.url ? project.site?.image : undefined);
 
   return (
     <div style={themeVars(config)}>
@@ -61,7 +63,7 @@ export function ProjectPage({ config, project, base }: Props) {
           </div>
         )}
 
-        {project.image && <img className={s.image} src={project.image} alt={`Screenshot of ${project.name}`} />}
+        {image && <img className={s.image} src={image} alt={`Screenshot of ${project.name}`} />}
 
         {project.highlights && project.highlights.length > 0 && (
           <ul className={s.highlights}>

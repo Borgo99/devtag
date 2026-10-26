@@ -117,6 +117,22 @@ export async function returnCvImport(id: string) {
   await pool.query("delete from cv_imports where id = $1", [id]);
 }
 
+// Site previews
+
+/** Each read fetches a site and stores up to two images: a few per account a day. */
+export const SITE_READS_PER_USER = 30;
+
+/** Records one site read for the user if the 24-hour limit allows it. False when it doesn't. */
+export async function takeSiteRead(userId: string) {
+  const { rowCount } = await pool.query(
+    `insert into site_reads (user_id)
+     select $1
+     where (select count(*) from site_reads where user_id = $1 and created_at > now() - interval '24 hours') < $2`,
+    [userId, SITE_READS_PER_USER],
+  );
+  return rowCount === 1;
+}
+
 // Page visits
 
 /**
@@ -151,18 +167,19 @@ export async function visitStats(userId: string) {
 const s3 = new S3Client({ region: process.env.AWS_REGION });
 
 /**
- * Saves a photo (a JPEG from lib/photos.ts) in S3 and returns its CloudFront URL. Every upload gets a
- * new name, so a URL never changes content and can be cached forever. Replaced photos stay in the
- * bucket: the live page may still show the old one until the next publish.
+ * Saves an image we encoded (a photo from lib/photos.ts, a site's preview or icon from lib/site-preview.ts)
+ * in S3 and returns its CloudFront URL. Every upload gets a new name, so a URL never changes content and
+ * can be cached forever. Replaced images stay in the bucket: the live page may still show the old one
+ * until the next publish.
  */
-export async function savePhoto(userId: string, jpeg: Buffer) {
-  const key = `photos/${userId}/${randomUUID()}.jpg`;
+export async function savePhoto(userId: string, image: Buffer, format: "jpeg" | "png" = "jpeg") {
+  const key = `photos/${userId}/${randomUUID()}.${format === "png" ? "png" : "jpg"}`;
   await s3.send(
     new PutObjectCommand({
       Bucket: process.env.S3_BUCKET,
       Key: key,
-      Body: jpeg,
-      ContentType: "image/jpeg",
+      Body: image,
+      ContentType: `image/${format}`,
       CacheControl: "public, max-age=31536000, immutable",
     }),
   );

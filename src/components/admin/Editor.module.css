@@ -174,6 +174,26 @@
   color: var(--text);
 }
 
+.togglePreview {
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: none;
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.togglePreview:hover {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
 /* Form and preview side by side */
 
 .main {
@@ -198,6 +218,16 @@
   padding: 16px 16px 16px 0;
 }
 
+/* Preview hidden: the form takes the whole width, its content centred. The scroll area stays full width,
+   so the wheel works anywhere on the page. */
+.main[data-preview="hidden"] {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.main[data-preview="hidden"] .form {
+  padding-inline: max(16px, calc((100% - 760px) / 2));
+}
+
 .message {
   padding: 10px 14px;
   border-radius: 12px;
@@ -212,6 +242,22 @@
 .note {
   font-size: 0.78rem;
   color: var(--faint);
+}
+
+/* A link-looking button inside a note. */
+.textButton {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.textButton:hover {
+  color: var(--text);
 }
 
 .choice {
@@ -287,6 +333,10 @@
 
   .tabs {
     display: flex;
+  }
+
+  .togglePreview {
+    display: none;
   }
 
   .main[data-view="edit"] .previewPane,

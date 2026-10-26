@@ -2,11 +2,12 @@
 
 import type { ReactNode } from "react";
 import type { Education, Job, Link, PortfolioConfig, Project, Publication } from "@/lib/types";
-import { PORTFOLIO_MAX } from "@/lib/portfolio";
-import { slugify } from "@/lib/text";
+import { PORTFOLIO_MAX, featured as featuredItems } from "@/lib/portfolio";
+import { isWebAddress, slugify } from "@/lib/text";
 import { JOB_TYPES, SENIORITY, WORK_MODES } from "@/lib/work";
-import { Check, Chips, Lines, List, LongText, Row, Section, Select, Text, Toggles } from "./fields";
+import { Check, Chips, Lines, List, LongText, Order, Row, Section, Select, Text, Toggles } from "./fields";
 import { PhotoInput } from "./PhotoInput";
+import { ScreenshotInput } from "./ScreenshotInput";
 import s from "./Editor.module.css";
 
 /** The editor's sections, in the order of the page. Each one edits a part of the config. */
@@ -30,11 +31,54 @@ const LINK_TYPES = ["github", "linkedin", "email", "website", "cv", "x", "gitlab
 
 const at = (role?: string, org?: string) => [role, org].filter(Boolean).join(" @ ");
 
+/** Under a project's live site: what was read from it (lib/site-preview.ts), with ways to redo or drop it. */
+function SiteStatus({ project, set }: { project: Project; set: (project: Project) => void }) {
+  if (!project.url || !isWebAddress(project.url)) return null;
+  const site = project.site?.url === project.url ? project.site : undefined;
+  if (!site) return <p className={s.note}>Reading the site for its preview image and logo…</p>;
+  const found = [site.image && "its preview image", site.logo && "its logo"].filter(Boolean).join(" and ");
+  return (
+    <p className={s.note}>
+      {project.image
+        ? "Your screenshot is shown."
+        : found
+          ? `The card shows ${found}.`
+          : "Nothing to use on the site: the card shows a drawing."}{" "}
+      <button type="button" className={s.textButton} onClick={() => set({ ...project, site: undefined })}>
+        Read again
+      </button>
+      {site.image && !project.image && (
+        <>
+          {" · "}
+          <button
+            type="button"
+            className={s.textButton}
+            onClick={() => set({ ...project, site: { ...site, image: undefined } })}
+          >
+            Don&apos;t use its image
+          </button>
+        </>
+      )}
+    </p>
+  );
+}
+
 export function Sections({ config, update, review, reviewed, companies }: Props) {
   const { profile } = config;
-  const featured = [...(config.projects ?? []), ...(config.publications ?? [])].filter((p) => p.portfolio).length;
+  const order = featuredItems(config);
+  const featured = order.length;
   const section = (id: SectionId) => ({ review: review.includes(id), onReviewed: () => reviewed(id) });
   const open = config.openToWork ?? { active: false };
+
+  /** Moves a featured item in the Portfolio section: every featured item gets its position. */
+  function moveFeatured(from: number, to: number) {
+    const next = [...order];
+    next.splice(to, 0, ...next.splice(from, 1));
+    const ranks = new Map<object, number>(next.map((f, i) => [f.item, i + 1]));
+    const ranked = <T extends object>(items?: T[]) =>
+      items?.map((item) => (ranks.has(item) ? { ...item, portfolioRank: ranks.get(item) } : item));
+    update({ projects: ranked(config.projects), publications: ranked(config.publications) });
+  }
   const setOpen = (patch: Partial<typeof open>) => update({ openToWork: { ...open, ...patch } });
 
   return (
@@ -287,6 +331,28 @@ export function Sections({ config, update, review, reviewed, companies }: Props)
         </List>
       </Section>
 
+      <Section title="Portfolio" count={featured}>
+        {featured > 0 && (
+          <Order
+            items={order.map((f, i) => ({
+              key:
+                f.type === "project"
+                  ? `p${config.projects?.indexOf(f.item)}`
+                  : `w${config.publications?.indexOf(f.item)}`,
+              label: f.type === "project" ? f.item.name : f.item.title,
+              note: i >= PORTFOLIO_MAX ? "not shown" : f.type === "project" ? "project" : "publication",
+            }))}
+            onMove={moveFeatured}
+          />
+        )}
+        <p className={s.note}>
+          {featured > 0
+            ? "The order of the Portfolio section at the top of your page."
+            : `Pick up to ${PORTFOLIO_MAX} projects or publications: tick “Feature it in the Portfolio section” on each one.`}
+          {featured > 0 && config.portfolioStyle === "large" && " With large previews, items with a link come first."}
+        </p>
+      </Section>
+
       <Section title="Projects" count={config.projects?.length} {...section("projects")}>
         <List<Project>
           items={config.projects}
@@ -327,6 +393,8 @@ export function Sections({ config, update, review, reviewed, companies }: Props)
                   onChange={(repo) => set({ ...project, repo })}
                 />
               </Row>
+              <SiteStatus project={project} set={set} />
+              <ScreenshotInput value={project.image} onChange={(image) => set({ ...project, image })} />
               <Chips label="Stack" value={project.stack} onChange={(stack) => set({ ...project, stack })} />
               <Lines
                 label="Highlights"
@@ -340,26 +408,20 @@ export function Sections({ config, update, review, reviewed, companies }: Props)
                 value={project.details}
                 onChange={(details) => set({ ...project, details })}
               />
-              <Row>
-                <Text
-                  label="Screenshot URL"
-                  hint="16:10"
-                  placeholder="https://"
-                  value={project.image}
-                  onChange={(image) => set({ ...project, image })}
-                />
-                <Text
-                  label="Page address"
-                  hint="Keeps old links working if you rename it"
-                  placeholder={slugify(project.name) || "my-project"}
-                  value={project.slug}
-                  onChange={(slug) => set({ ...project, slug: slug || undefined })}
-                />
-              </Row>
+              <Text
+                label="Page address"
+                hint="Keeps old links working if you rename it"
+                placeholder={slugify(project.name) || "my-project"}
+                value={project.slug}
+                onChange={(slug) => set({ ...project, slug: slug || undefined })}
+              />
               <Check
                 label={`Feature it in the Portfolio section at the top (${featured}/${PORTFOLIO_MAX})`}
                 checked={Boolean(project.portfolio)}
-                onChange={(portfolio) => set({ ...project, portfolio: portfolio || undefined })}
+                // A newly featured item goes last; an unfeatured one forgets its place.
+                onChange={(portfolio) =>
+                  set({ ...project, portfolio: portfolio || undefined, portfolioRank: undefined })
+                }
               />
             </>
           )}
@@ -467,7 +529,7 @@ export function Sections({ config, update, review, reviewed, companies }: Props)
               <Check
                 label={`Feature it in the Portfolio section at the top (${featured}/${PORTFOLIO_MAX})`}
                 checked={Boolean(pub.portfolio)}
-                onChange={(portfolio) => set({ ...pub, portfolio: portfolio || undefined })}
+                onChange={(portfolio) => set({ ...pub, portfolio: portfolio || undefined, portfolioRank: undefined })}
               />
             </>
           )}
@@ -477,12 +539,12 @@ export function Sections({ config, update, review, reviewed, companies }: Props)
       <Section title="Look">
         <div className={s.choice} role="radiogroup" aria-label="Portfolio section">
           <span className={s.choiceLabel}>Portfolio section</span>
-          {(["large", "compact"] as const).map((style) => (
+          {(["compact", "large"] as const).map((style) => (
             <label key={style} className={s.option}>
               <input
                 type="radio"
                 name="portfolioStyle"
-                checked={(config.portfolioStyle ?? "large") === style}
+                checked={(config.portfolioStyle ?? "compact") === style}
                 onChange={() => update({ portfolioStyle: style })}
               />
               {style === "large" ? "Large previews" : "Compact cards"}

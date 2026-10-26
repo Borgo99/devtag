@@ -5,7 +5,7 @@ import { Tags } from "./Tags";
 import { CardLink, KindBadge, Thumb, opensLink } from "./PortfolioParts";
 import s from "./Portfolio.module.css";
 
-/** Large version of the Portfolio section (default): big preview in a little browser window, for items with a link. */
+/** Large version of the Portfolio section (portfolioStyle: "large"): big preview in a little browser window, for items with a link. */
 export function Portfolio({ entries }: { entries: PortfolioEntry[] }) {
   // Cards with a preview first, in pairs; cards with nothing to open follow, one full-width row each,
   // so a short card never has to stretch next to a tall one.

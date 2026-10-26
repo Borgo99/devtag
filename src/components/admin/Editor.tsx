@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { PortfolioConfig } from "@/lib/types";
 import { cleanConfig, publishProblems } from "@/lib/clean";
+import { isWebAddress } from "@/lib/text";
 import { LogoMark } from "@/components/site/LogoMark";
 import { CompaniesSection, type Matching } from "./CompaniesSection";
 import { CvImport } from "./CvImport";
@@ -29,9 +30,27 @@ interface Props {
 type SaveState = "saved" | "saving" | "error";
 
 const SAVE_DELAY = 700;
+/** Wait for the address to be typed out before reading the site. */
+const SITE_DELAY = 1500;
 
+/**
+ * Whether an import would overwrite something the user wrote, so it asks first. The name doesn't count:
+ * a new page gets it from the sign-in account, and the CV has it too.
+ */
 const hasContent = (c: PortfolioConfig) =>
-  Boolean(c.profile.name || c.profile.about || c.experience?.length || c.projects?.length || c.skills.length);
+  Boolean(
+    c.profile.role ||
+    c.profile.about ||
+    c.links?.length ||
+    c.topSkills?.length ||
+    c.skills.length ||
+    c.stack?.length ||
+    c.languages?.length ||
+    c.experience?.length ||
+    c.projects?.length ||
+    c.education?.length ||
+    c.publications?.length,
+  );
 
 /** Sections an import filled, to mark them "check". */
 function filledSections(c: PortfolioConfig): SectionId[] {
@@ -73,6 +92,8 @@ export function Editor({
   const [message, setMessage] = useState<string>();
   const [version, setVersion] = useState(0);
   const [view, setView] = useState<"edit" | "preview">("edit");
+  // Wide screens: the preview can be hidden to give the form the whole width (narrow ones use the tabs).
+  const [showPreview, setShowPreview] = useState(true);
 
   const body = JSON.stringify({ draft: config, review });
   const saved = useRef(body);
@@ -108,6 +129,35 @@ export function Editor({
     timer.current = window.setTimeout(() => persist(body), SAVE_DELAY);
     return () => window.clearTimeout(timer.current);
   }, [body, persist]);
+
+  // A project's live site is read once for its preview image and logo (api/site-preview). `site.url`
+  // records the address that was read, so a changed address is read again; failures aren't retried.
+  const reading = useRef(new Set<string>());
+  useEffect(() => {
+    const address = config.projects?.find(
+      (p) => p.url && isWebAddress(p.url) && p.site?.url !== p.url && !reading.current.has(p.url),
+    )?.url;
+    if (!address) return;
+    const timer = window.setTimeout(async () => {
+      reading.current.add(address);
+      const res = await fetch("/api/site-preview", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ url: address }),
+      }).catch(() => undefined);
+      const data = await res?.json().catch(() => ({}));
+      if (res?.status === 429) setMessage(data.error);
+      const found = res?.ok ? { image: data.image, logo: data.logo } : {};
+      reading.current.delete(address);
+      setConfig((c) => ({
+        ...c,
+        projects: c.projects?.map((p) =>
+          p.url === address && p.site?.url !== address ? { ...p, site: { url: address, ...found } } : p,
+        ),
+      }));
+    }, SITE_DELAY);
+    return () => window.clearTimeout(timer);
+  }, [config.projects]);
 
   // Don't lose the last keystrokes when the tab closes.
   useEffect(() => {
@@ -189,9 +239,25 @@ export function Editor({
           </span>
         )}
         <div className={s.actions}>
+          <button
+            type="button"
+            className={s.togglePreview}
+            aria-pressed={!showPreview}
+            onClick={() => setShowPreview((shown) => !shown)}
+          >
+            {showPreview ? "Hide preview" : "Show preview"}
+          </button>
           <div className={s.tabs} role="group" aria-label="View">
             {(["edit", "preview"] as const).map((v) => (
-              <button key={v} type="button" aria-pressed={view === v} onClick={() => setView(v)}>
+              <button
+                key={v}
+                type="button"
+                aria-pressed={view === v}
+                onClick={() => {
+                  setView(v);
+                  if (v === "preview") setShowPreview(true);
+                }}
+              >
                 {v}
               </button>
             ))}
@@ -211,7 +277,7 @@ export function Editor({
         </div>
       </header>
 
-      <div className={s.main} data-view={view}>
+      <div className={s.main} data-view={view} data-preview={showPreview ? undefined : "hidden"}>
         <div className={s.form}>
           {(message || problems.length > 0) && (
             <p className={s.message}>{message ?? `${problems.join(" ")} Then you can publish.`}</p>
@@ -225,9 +291,12 @@ export function Editor({
             companies={<CompaniesSection initial={matching} save={saveMatching} />}
           />
         </div>
-        <div className={s.previewPane}>
-          <Preview version={version} address={address} />
-        </div>
+        {/* Hidden, it's not rendered at all: no reloads on every save. */}
+        {showPreview && (
+          <div className={s.previewPane}>
+            <Preview version={version} address={address} />
+          </div>
+        )}
       </div>
     </div>
   );

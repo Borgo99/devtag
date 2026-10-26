@@ -21,3 +21,6 @@ export function slugify(text: string) {
 
 /** Splits config text into paragraphs on blank lines. */
 export const paragraphs = (text: string) => text.split(/\n\s*\n/);
+
+/** A site the editor can read a preview from: "https://…", or a bare domain like "devtag.io/demo". */
+export const isWebAddress = (text: string) => /^(https?:\/\/)?[\w-]+(\.[\w-]+)+(:\d+)?([/?#]\S*)?$/i.test(text.trim());

@@ -25,6 +25,7 @@ Developers drop their CV, review what it filled in, and publish a portfolio page
 - **CV import.** The PDF is read in the browser, two-column layouts included. Only its text goes to an AI that fills in each section, and every imported section is marked "check" until you review it.
 - **Skills in orbit.** Type `TypeScript`, `k8s` or `golang`: 3,500+ logos from Simple Icons and Devicon are found by name.
 - **A page for every project,** with its own link and its own share image.
+- **Portfolio cards that look right without screenshots:** the editor reads each live site's own preview image and logo (public addresses only, re-encoded and stored), and you choose the cards' order.
 - **Link previews** (Open Graph) made from your page: photo, role, top skills.
 - **Open to work and seniority:** a green ring on your photo, job types, work mode and availability, plus a "Senior · 6+ years" badge.
 - **Visitor counts** in the editor: each visitor counted once a day, bots left out, with no cookies and no stored IP addresses.

@@ -29,6 +29,15 @@ create table if not exists cv_imports (
 create index if not exists cv_imports_by_user on cv_imports (user_id, created_at);
 create index if not exists cv_imports_by_time on cv_imports (created_at);
 
+-- One row per site read for a project's preview (api/site-preview), to cap them per account.
+create table if not exists site_reads (
+  id         bigint generated always as identity primary key,
+  user_id    text not null references "user" (id) on delete cascade,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists site_reads_by_user on site_reads (user_id, created_at);
+
 -- Visitors of each published page, each counted once a day. `visitor` hashes the IP address and browser with
 -- that day's salt; salts are deleted the next day, so the hashes can't be traced back to anyone afterwards.
 create table if not exists page_visits (

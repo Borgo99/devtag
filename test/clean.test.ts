@@ -59,3 +59,27 @@ test("seniority, years and open to work keep only known values", () => {
   assert.deepEqual(config.openToWork, { active: true, types: ["full-time"], modes: ["remote"] });
   assert.equal(cleanConfig({ profile: { name: "A", role: "B", years: 99 } }).profile.years, undefined);
 });
+
+test("site previews and portfolio positions keep only safe values", () => {
+  const config = cleanConfig({
+    profile: { name: "Ada", role: "Dev" },
+    projects: [
+      {
+        name: "A",
+        description: "a",
+        url: "https://a.dev",
+        site: { url: "https://a.dev", logo: "javascript:x", image: "https://cdn/x.jpg" },
+        portfolio: true,
+        portfolioRank: 2,
+      },
+      { name: "B", description: "b", site: { image: "https://cdn/y.jpg" }, portfolio: true, portfolioRank: 0 },
+    ],
+    publications: [{ title: "P", portfolio: true, portfolioRank: 1.5 }],
+  });
+  assert.deepEqual(config.projects?.[0].site, { url: "https://a.dev", image: "https://cdn/x.jpg" });
+  assert.equal(config.projects?.[0].portfolioRank, 2);
+  // Without the address it was read from, a preview means nothing; ranks are whole numbers from 1.
+  assert.equal(config.projects?.[1].site, undefined);
+  assert.equal(config.projects?.[1].portfolioRank, undefined);
+  assert.equal(config.publications?.[0].portfolioRank, undefined);
+});

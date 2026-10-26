@@ -1,4 +1,4 @@
-import { slugify } from "./text";
+import { slugify } from "./text.ts"; // with ".ts": the tests run this file directly with Node
 import type { PortfolioConfig, Project } from "./types";
 
 export const projectSlug = (project: Project) => project.slug ?? slugify(project.name);

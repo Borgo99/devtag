@@ -47,8 +47,34 @@ export function Thumb({ entry }: { entry: PortfolioEntry }) {
       ) : entry.kind === "code" ? (
         <Code seed={entry.name} />
       ) : (
-        <span className={s.placeholder}>{entry.label}</span>
+        <Site entry={entry} />
       )}
+    </div>
+  );
+}
+
+/** A live site without an image: a little landing page with the site's logo (or the name's initial) and name. */
+function Site({ entry }: { entry: PortfolioEntry }) {
+  return (
+    <div className={s.site} aria-hidden>
+      <div className={s.siteNav}>
+        <span className={s.siteMark} />
+        <i />
+        <i />
+        <i />
+      </div>
+      <div className={s.siteHero}>
+        {entry.logo ? (
+          <img className={s.siteLogo} src={entry.logo} alt="" width={128} height={128} loading="lazy" />
+        ) : (
+          <span className={s.siteInitial}>{entry.name.trim().charAt(0).toUpperCase()}</span>
+        )}
+        <span className={s.siteName}>{entry.name}</span>
+        <span className={s.siteButtons}>
+          <i />
+          <i />
+        </span>
+      </div>
     </div>
   );
 }

@@ -34,8 +34,12 @@ export default function PrivacyPage() {
           read it, and search engines and link previews may show it.
         </li>
         <li>
-          <strong>Your photo:</strong> we convert it to a 512×512 image and remove its metadata, such as location and
-          camera details.
+          <strong>Your photo and screenshots:</strong> we convert them to smaller images and remove their metadata, such
+          as location and camera details.
+        </li>
+        <li>
+          <strong>Your projects&apos; sites:</strong> when you add a project&apos;s live site, we read that public page
+          once for its preview image and icon, and store a copy for the project&apos;s card.
         </li>
         <li>
           <strong>Your CV:</strong> the PDF is read in your browser and never uploaded. Only its text is sent to our

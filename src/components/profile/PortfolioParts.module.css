@@ -58,15 +58,105 @@
   object-position: top;
 }
 
-.placeholder {
+/* A live site without an image: a little landing page in the page's colors. */
+.site {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background:
+    radial-gradient(70% 60% at 50% 0%, var(--accent-soft), transparent 70%),
+    radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1.4px) 0 0 / 4cqw 4cqw,
+    #0d1117;
+}
+
+.siteNav {
+  display: flex;
+  align-items: center;
+  gap: 2.4cqw;
+  padding: 3.6cqw 5cqw;
+}
+
+.siteNav i {
+  width: 7cqw;
+  height: 1.2cqw;
+  border-radius: 1cqw;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.siteNav i:first-of-type {
+  margin-left: auto;
+}
+
+.siteMark {
+  width: 4.4cqw;
+  height: 4.4cqw;
+  border-radius: 1.2cqw;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+}
+
+.siteHero {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.8cqw;
+  padding: 0 8cqw 7cqw;
+}
+
+/* On a light tile, so dark logos stay visible on the dark card. */
+.siteLogo,
+.siteInitial {
+  width: 15cqw;
+  height: 15cqw;
+  border-radius: 3.6cqw;
+  box-shadow: 0 1.2cqw 4cqw rgba(0, 0, 0, 0.45);
+}
+
+.siteLogo {
+  padding: 1.8cqw;
+  object-fit: contain;
+  background: #f4f6f8;
+}
+
+.siteInitial {
   display: grid;
   place-items: center;
-  height: 100%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
   font:
-    600 5cqw var(--font-mono),
-    monospace;
-  color: var(--accent);
-  background: radial-gradient(circle at 30% 20%, var(--accent-soft), transparent 70%);
+    700 8cqw / 1 var(--font-sans),
+    sans-serif;
+  color: #05070a;
+}
+
+.siteName {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font:
+    700 6cqw / 1.15 var(--font-sans),
+    sans-serif;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.siteButtons {
+  display: flex;
+  gap: 2cqw;
+}
+
+.siteButtons i {
+  width: 14cqw;
+  height: 4.4cqw;
+  border-radius: 99px;
+  background: linear-gradient(120deg, var(--accent), var(--accent2));
+}
+
+.siteButtons i + i {
+  width: 11cqw;
+  border: 0.3cqw solid rgba(255, 255, 255, 0.18);
+  background: none;
 }
 
 .code {

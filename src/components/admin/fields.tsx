@@ -342,6 +342,40 @@ export function List<T>({
   );
 }
 
+/** Items in a chosen order, each with buttons to move it up or down. */
+export function Order({
+  items,
+  onMove,
+}: {
+  items: { key: string; label: string; note?: string }[];
+  onMove: (from: number, to: number) => void;
+}) {
+  return (
+    <ol className={s.list}>
+      {items.map((item, i) => (
+        <li key={item.key} className={`${s.item} ${s.itemHead} ${s.orderItem}`}>
+          <span className={s.position}>{i + 1}</span>
+          <span className={s.itemTitle}>{item.label || <em>Untitled</em>}</span>
+          {item.note && <span className={s.hint}>{item.note}</span>}
+          <span className={s.itemActions}>
+            <button type="button" aria-label="Move up" disabled={i === 0} onClick={() => onMove(i, i - 1)}>
+              ↑
+            </button>
+            <button
+              type="button"
+              aria-label="Move down"
+              disabled={i === items.length - 1}
+              onClick={() => onMove(i, i + 1)}
+            >
+              ↓
+            </button>
+          </span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 /** One section of the editor. `review`: filled from a CV and not checked yet. */
 export function Section({
   title,

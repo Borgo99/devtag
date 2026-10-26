@@ -81,8 +81,15 @@ export interface Project {
   details?: string;
   /** Screenshot URL (16:10 works best). Used in the Portfolio section and on the project page. */
   image?: string;
+  /**
+   * What the editor read from `url` (api/site-preview): the site's own preview image and its icon, stored
+   * by devtag. Used when there is no `image`. `url` is the address they were read from.
+   */
+  site?: { url: string; image?: string; logo?: string };
   /** Also show it in the Portfolio section at the top (max 6 items in total). */
   portfolio?: boolean;
+  /** Position in the Portfolio section, 1 first (set in the editor). Unranked items follow, in list order. */
+  portfolioRank?: number;
   /** Last part of the project page URL. Defaults to the name: "Dog breed detector" → /projects/dog-breed-detector */
   slug?: string;
 }
@@ -100,6 +107,8 @@ export interface Publication {
   keywords?: string[];
   /** Also show it in the Portfolio section at the top (max 6 items in total). */
   portfolio?: boolean;
+  /** Position in the Portfolio section, like a project's `portfolioRank`. */
+  portfolioRank?: number;
 }
 
 export interface PortfolioConfig {
@@ -135,7 +144,7 @@ export interface PortfolioConfig {
   stack?: StackGroup[];
   languages?: Language[];
   experience?: Job[];
-  /** Look of the Portfolio section (items flagged with `portfolio: true`): "large" big previews (default) · "compact" small cards. */
+  /** Look of the Portfolio section (items flagged with `portfolio: true`): "compact" small cards (default) · "large" big previews. */
   portfolioStyle?: "large" | "compact";
   projects?: Project[];
   education?: Education[];

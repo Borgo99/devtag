@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { crc32 } from "node:zlib";
 import sharp from "sharp";
-import { optimizePhoto, PHOTO_SIZE } from "../src/lib/photos.ts";
+import { optimizePhoto, optimizeScreenshot, PHOTO_SIZE, SCREENSHOT_WIDTH } from "../src/lib/photos.ts";
 
 const image = (width: number, height: number, alpha = false) =>
   sharp({
@@ -53,4 +53,14 @@ test("a decompression bomb (tiny file, huge declared size) is refused before dec
   png.writeUInt32BE(100_000, 20);
   png.writeUInt32BE(crc32(png.subarray(12, 29)), 29);
   await rejects(png, /too large/);
+});
+
+test("screenshots keep their shape, at most 1600 px wide; whole-page captures lose their bottom", async () => {
+  const wide = await sharp(await optimizeScreenshot(await image(3000, 2000).png().toBuffer())).metadata();
+  assert.deepEqual([wide.format, wide.width, wide.height], ["jpeg", SCREENSHOT_WIDTH, 1067]);
+  const small = await sharp(await optimizeScreenshot(await image(800, 500).png().toBuffer())).metadata();
+  assert.deepEqual([small.width, small.height], [800, 500]); // never enlarged
+  const page = await sharp(await optimizeScreenshot(await image(1440, 9000).jpeg().toBuffer())).metadata();
+  assert.deepEqual([page.width, page.height], [1440, 4000]);
+  await assert.rejects(optimizeScreenshot(await image(300, 200).png().toBuffer()), /too small/);
 });

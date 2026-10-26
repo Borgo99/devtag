@@ -64,6 +64,17 @@ const years = (value: unknown) => {
   return typeof n === "number" && Number.isInteger(n) && n >= 0 && n <= 60 ? n : undefined;
 };
 
+/** A position in the Portfolio section: a whole number from 1. */
+const rank = (value: unknown) =>
+  typeof value === "number" && Number.isInteger(value) && value >= 1 && value <= 99 ? value : undefined;
+
+/** What the editor read from a project's site, kept only with the address it was read from. */
+function site(value: unknown) {
+  const s = obj(value);
+  const from = url(s.url);
+  return from ? compact({ url: from, image: url(s.image), logo: url(s.logo) }) : undefined;
+}
+
 /** A year can be a number in the config; numbers stay numbers. */
 const year = (value: unknown) => (typeof value === "number" ? value : text(value));
 
@@ -153,7 +164,9 @@ export function cleanConfig(input: unknown, { complete = false } = {}): Portfoli
         highlights: texts(p.highlights),
         details: text(p.details),
         image: url(p.image),
+        site: site(p.site),
         portfolio: p.portfolio === true || undefined,
+        portfolioRank: rank(p.portfolioRank),
         slug:
           text(p.slug)
             ?.toLowerCase()
@@ -190,6 +203,7 @@ export function cleanConfig(input: unknown, { complete = false } = {}): Portfoli
         url: url(p.url),
         keywords: texts(p.keywords),
         portfolio: p.portfolio === true || undefined,
+        portfolioRank: rank(p.portfolioRank),
       }),
     )
     .filter(keep<Publication>(["title"], complete));

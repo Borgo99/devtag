@@ -247,6 +247,19 @@ select.input {
   color: #ff7b72;
 }
 
+/* Order: rows that are only moved, never opened. */
+.orderItem {
+  cursor: default;
+}
+
+.position {
+  min-width: 1.2em;
+  font:
+    500 0.78rem var(--font-mono),
+    monospace;
+  color: var(--faint);
+}
+
 .itemBody {
   display: flex;
   flex-direction: column;

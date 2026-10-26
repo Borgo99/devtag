@@ -6,7 +6,7 @@ import { Tags } from "./Tags";
 import { CardLink, KindBadge, Thumb, opensLink } from "./PortfolioParts";
 import s from "./PortfolioCompact.module.css";
 
-/** Compact version of the Portfolio section (portfolioStyle: "compact"): small thumbnail for items with a link, text beside it. */
+/** Compact version of the Portfolio section (default): small thumbnail for items with a link, text beside it. */
 export function PortfolioCompact({ entries }: { entries: PortfolioEntry[] }) {
   return (
     <ul className={s.grid}>
