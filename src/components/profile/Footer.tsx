@@ -10,8 +10,8 @@ export function Footer({ name }: { name: string }) {
       <p>
         © {new Date().getFullYear()} {name}
       </p>
-      {/* Every page advertises the site. */}
-      <a href={SITE_URL} className={s.built}>
+      {/* Every page advertises the site; the tag shows sign-ups from it in the funnel. */}
+      <a href={`${SITE_URL}?ref=page`} className={s.built}>
         built with <span className={s.brand}>devtag</span>
         <span className={s.cursor}>_</span>
       </a>

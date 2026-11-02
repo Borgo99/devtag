@@ -51,3 +51,31 @@ create table if not exists visit_salts (
   day  date primary key,
   salt bytea not null
 );
+
+-- The funnel (admin/stats). When the name was claimed, when the page first went live, and where the user came
+-- from: a ?ref= tag or the referring site of their visit to devtag.io that day (null: unknown). Existing rows are
+-- filled from the account and the last publish.
+alter table profiles add column if not exists created_at timestamptz;
+alter table profiles add column if not exists first_published_at timestamptz;
+alter table profiles add column if not exists source text;
+update profiles p set created_at = u."createdAt" from "user" u where p.user_id = u.id and p.created_at is null;
+alter table profiles alter column created_at set default now();
+update profiles set first_published_at = published_at where first_published_at is null and published_at is not null;
+
+-- Visitors of the main site (landing and login), each counted once a day, hashed like page_visits. `source` is
+-- where their first visit of the day came from.
+create table if not exists site_visits (
+  day     date not null,
+  visitor bytea not null,
+  source  text not null,
+  primary key (day, visitor)
+);
+
+-- One row per click in the editor's share dialog: which place the page was shared to.
+create table if not exists shares (
+  user_id    text not null references "user" (id) on delete cascade,
+  place      text not null,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists shares_by_user on shares (user_id);

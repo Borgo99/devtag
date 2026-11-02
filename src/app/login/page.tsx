@@ -7,6 +7,7 @@ import { currentAccount } from "@/lib/session";
 import { DISPLAY_DOMAIN } from "@/lib/site";
 import { SignInButtons } from "./SignInButtons";
 import { LogoMark } from "@/components/site/LogoMark";
+import { VisitBeacon } from "@/components/site/VisitBeacon";
 import s from "./login.module.css";
 
 export const metadata: Metadata = { title: "Sign in — devtag", robots: { index: false } };
@@ -26,6 +27,7 @@ export default async function LoginPage({ searchParams }: Props) {
   return (
     <>
       <Background config={sample} />
+      <VisitBeacon />
       <main className={s.page}>
         <a href="/" className={s.logo}>
           <LogoMark />

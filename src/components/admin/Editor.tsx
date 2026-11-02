@@ -9,6 +9,7 @@ import { CompaniesSection, type Matching } from "./CompaniesSection";
 import { CvImport } from "./CvImport";
 import { Preview } from "./Preview";
 import { Sections, type SectionId } from "./Sections";
+import { SharePanel } from "./SharePanel";
 import s from "./Editor.module.css";
 
 interface Props {
@@ -89,6 +90,7 @@ export function Editor({
   const [save, setSave] = useState<SaveState>("saved");
   const [live, setLive] = useState({ upToDate, everPublished });
   const [publishing, setPublishing] = useState(false);
+  const [sharing, setSharing] = useState(false);
   const [message, setMessage] = useState<string>();
   const [version, setVersion] = useState(0);
   const [view, setView] = useState<"edit" | "preview">("edit");
@@ -181,6 +183,8 @@ export function Editor({
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error ?? "Publishing failed. Try again.");
       setLive({ upToDate: true, everPublished: true });
+      // The first time the page goes live is when it's worth sharing.
+      if (!live.everPublished) setSharing(true);
     } catch (e) {
       setMessage((e as Error).message);
     } finally {
@@ -262,6 +266,11 @@ export function Editor({
               </button>
             ))}
           </div>
+          {live.everPublished && (
+            <button type="button" className={s.share} onClick={() => setSharing(true)}>
+              Share
+            </button>
+          )}
           <button
             type="button"
             className={s.publish}
@@ -298,6 +307,7 @@ export function Editor({
           </div>
         )}
       </div>
+      {sharing && <SharePanel address={address} pageUrl={pageUrl} onClose={() => setSharing(false)} />}
     </div>
   );
 }

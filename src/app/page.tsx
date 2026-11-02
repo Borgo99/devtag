@@ -16,6 +16,7 @@ import { TypedNameProvider, YouAvatar } from "@/components/landing/YouAvatar";
 import { sample } from "@/components/landing/sample";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { LogoMark } from "@/components/site/LogoMark";
+import { VisitBeacon } from "@/components/site/VisitBeacon";
 import hero from "@/components/profile/Hero.module.css";
 import avatar from "@/components/profile/Avatar.module.css";
 import s from "@/components/landing/Landing.module.css";
@@ -262,6 +263,7 @@ export default function Landing() {
       <SiteFooter />
 
       <RevealObserver />
+      <VisitBeacon />
     </>
   );
 }

@@ -2,8 +2,9 @@
 
 import { redirect } from "next/navigation";
 import { currentAccount } from "@/lib/session";
-import { createProfile } from "@/lib/store";
+import { createProfile, sourceOfVisitor } from "@/lib/store";
 import { usernameError } from "@/lib/usernames";
+import { visitor } from "@/lib/visits";
 
 /** Claims the chosen name for the signed-in user and creates their page, starting from the name their sign-in provider gave. */
 export async function claimAction(form: FormData) {
@@ -19,10 +20,16 @@ export async function claimAction(form: FormData) {
   const error = usernameError(username);
   if (error) back(error);
 
-  const created = await createProfile(account.user.id, username, {
-    profile: { name: account.user.name ?? "", role: "" },
-    skills: [],
-  });
+  // Where the user came from: their visit to the main site today, matched by its daily hash (api/hit).
+  const who = await visitor();
+  const source = who && (await sourceOfVisitor(who));
+
+  const created = await createProfile(
+    account.user.id,
+    username,
+    { profile: { name: account.user.name ?? "", role: "" }, skills: [] },
+    source,
+  );
   if (!created) back("This name is already taken.");
   redirect("/admin");
 }

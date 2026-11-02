@@ -14,7 +14,7 @@ export default function PrivacyPage() {
 
   return (
     <TextPage command="cat privacy.md" title="Privacy policy">
-      <p>Effective date: 25 October 2026</p>
+      <p>Effective date: 2 November 2026</p>
       <p>
         devtag (devtag.io) is run by <strong>{COMPANY.name}</strong>, {COMPANY.address}, the data controller. This
         policy explains which personal data we process, why, for how long, and who helps us. Words like &ldquo;personal
@@ -56,6 +56,12 @@ export default function PrivacyPage() {
           the next day, so we keep no IP addresses. No cookies are used, and the page&apos;s owner only sees totals.
         </li>
         <li>
+          <strong>Visits to devtag.io and where you came from:</strong> we count the visitors of our home and sign-in
+          pages the same way, each once a day, with the site that sent them (or a tag in our link). When you claim
+          your page, we match it to that day&apos;s visit and note where you came from on your account, e.g.
+          &ldquo;reddit.com&rdquo;. We also record which buttons you use to share your page from the editor.
+        </li>
+        <li>
           <strong>Technical data:</strong> our hosting provider logs requests (IP address, browser, time) to run and
           protect the service, and keeps them for a short time.
         </li>
@@ -85,6 +91,10 @@ export default function PrivacyPage() {
           interest (Art. 6(1)(f)).
         </li>
         <li>
+          <strong>Counting visits to devtag.io, where sign-ups come from and how pages are shared,</strong> to learn
+          which links bring people and improve devtag: our legitimate interest (Art. 6(1)(f)).
+        </li>
+        <li>
           <strong>Security, preventing abuse and applying limits:</strong> our legitimate interest (Art. 6(1)(f)).
         </li>
         <li>
@@ -107,6 +117,10 @@ export default function PrivacyPage() {
         <li>Records of CV imports: with your account.</li>
         <li>Your choices for companies: until you change them or delete your account.</li>
         <li>Visit counts: with the page owner&apos;s account. The daily keys are deleted the next day.</li>
+        <li>
+          Visits to devtag.io: their daily keys are deleted the next day, so they can&apos;t be linked to anyone after
+          that. Where you came from and your shares: with your account.
+        </li>
       </ul>
 
       <h2>5. Who helps us</h2>

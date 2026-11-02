@@ -58,13 +58,15 @@ export const getProfile = (username: string) => one("select * from profiles wher
 
 export const getProfileOfUser = (userId: string) => one("select * from profiles where user_id = $1", [userId]);
 
-/** Claims `username` for the user. Undefined if the name is taken (or the user already has a page). */
-export const createProfile = (userId: string, username: string, draft: PortfolioConfig) =>
-  one("insert into profiles (user_id, username, draft) values ($1, $2, $3) on conflict do nothing returning *", [
-    userId,
-    username,
-    draft,
-  ]);
+/**
+ * Claims `username` for the user. Undefined if the name is taken (or the user already has a page).
+ * `source`: where the user came from, for the funnel.
+ */
+export const createProfile = (userId: string, username: string, draft: PortfolioConfig, source?: string) =>
+  one(
+    "insert into profiles (user_id, username, draft, source) values ($1, $2, $3, $4) on conflict do nothing returning *",
+    [userId, username, draft, source ?? null],
+  );
 
 export const saveDraft = (userId: string, draft: PortfolioConfig, review: string[]) =>
   one("update profiles set draft = $2, review = $3, updated_at = now() where user_id = $1 returning *", [
@@ -74,7 +76,18 @@ export const saveDraft = (userId: string, draft: PortfolioConfig, review: string
   ]);
 
 export const publish = (userId: string, published: PortfolioConfig) =>
-  one("update profiles set published = $2, published_at = now() where user_id = $1 returning *", [userId, published]);
+  one(
+    `update profiles set published = $2, published_at = now(), first_published_at = coalesce(first_published_at, now())
+     where user_id = $1 returning *`,
+    [userId, published],
+  );
+
+/** Where the editor's share dialog can send a page. */
+export const SHARE_PLACES = ["linkedin", "post", "github", "elsewhere"] as const;
+
+export async function recordShare(userId: string, place: (typeof SHARE_PLACES)[number]) {
+  await pool.query("insert into shares (user_id, place) values ($1, $2)", [userId, place]);
+}
 
 /** The private settings for companies. Consent keeps the time it was first given, until it's withdrawn. */
 export const saveMatching = (userId: string, consent: boolean, location: string | undefined) =>
@@ -140,16 +153,42 @@ export async function takeSiteRead(userId: string) {
  * a random salt that changes every day; old salts are deleted, so old hashes can't be linked to anyone.
  */
 export async function recordVisit(userId: string, visitor: string) {
-  await pool.query("delete from visit_salts where day < current_date");
-  await pool.query("insert into visit_salts (day, salt) values (current_date, $1) on conflict do nothing", [
-    randomBytes(32),
-  ]);
+  await saltToday();
   await pool.query(
     `insert into page_visits (user_id, day, visitor)
      select $1, current_date, sha256(salt || convert_to($1 || $2, 'UTF8')) from visit_salts where day = current_date
      on conflict do nothing`,
     [userId, visitor],
   );
+}
+
+/** Makes today's salt, and deletes the older ones. */
+async function saltToday() {
+  await pool.query("delete from visit_salts where day < current_date");
+  await pool.query("insert into visit_salts (day, salt) values (current_date, $1) on conflict do nothing", [
+    randomBytes(32),
+  ]);
+}
+
+/** Today's hash of a visitor of the main site; "site" keeps it apart from the hashes of page visits. */
+const SITE_VISITOR = "select sha256(salt || convert_to('site ' || $1, 'UTF8')) from visit_salts where day = current_date";
+
+/** Counts a visitor of the main site once a day, with where their first visit of the day came from. */
+export async function recordSiteVisit(visitor: string, source: string) {
+  await saltToday();
+  await pool.query(
+    `insert into site_visits (day, visitor, source) select current_date, (${SITE_VISITOR}), $2 on conflict do nothing`,
+    [visitor, source],
+  );
+}
+
+/** Where today's visitor came from, if they visited the main site today. */
+export async function sourceOfVisitor(visitor: string) {
+  const { rows } = await pool.query<{ source: string }>(
+    `select source from site_visits where day = current_date and visitor = (${SITE_VISITOR})`,
+    [visitor],
+  );
+  return rows[0]?.source;
 }
 
 /** Visitors of the user's page: all time, and in the last 7 days (today included). */

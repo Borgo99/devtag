@@ -194,6 +194,23 @@
   color: var(--text);
 }
 
+.share {
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  border-radius: 999px;
+  background: var(--accent-soft);
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--accent);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.share:hover {
+  border-color: var(--accent);
+}
+
 /* Form and preview side by side */
 
 .main {
