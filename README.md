@@ -9,6 +9,8 @@
 
 Developers drop their CV, review what it filled in, and publish a portfolio page at `yourname.devtag.io`: skills orbiting their photo, a page for every project, and link previews that look good on LinkedIn.
 
+**Try it:** [devtag.io](https://devtag.io/?ref=github)
+
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-4ade80)](LICENSE)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16-38bdf8)](https://nextjs.org)
 
