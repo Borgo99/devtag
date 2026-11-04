@@ -108,7 +108,8 @@
   white-space: nowrap;
   width: calc(var(--chars) * 1ch);
   max-width: 100%;
-  animation: type 1.3s steps(var(--chars)) 0.7s both;
+  /* Not `both`: a kept end value can hold the width measured before the font loaded, cutting the last letter. */
+  animation: type 1.3s steps(var(--chars)) 0.7s backwards;
 }
 
 /* Seniority, after the role: it fades in once the role has finished typing. */
