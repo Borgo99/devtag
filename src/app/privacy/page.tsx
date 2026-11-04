@@ -62,6 +62,11 @@ export default function PrivacyPage() {
           &ldquo;reddit.com&rdquo;. We also record which buttons you use to share your page from the editor.
         </li>
         <li>
+          <strong>Reddit ads:</strong> if you came from one of our ads on Reddit, its link carries a click ID made by
+          Reddit. We keep it with that day&apos;s visit and, if you claim your page, send it to Reddit to tell them the
+          ad brought a sign-up. We send nothing else: no IP address, browser or email.
+        </li>
+        <li>
           <strong>Technical data:</strong> our hosting provider logs requests (IP address, browser, time) to run and
           protect the service, and keeps them for a short time.
         </li>
@@ -92,7 +97,7 @@ export default function PrivacyPage() {
         </li>
         <li>
           <strong>Counting visits to devtag.io, where sign-ups come from and how pages are shared,</strong> to learn
-          which links bring people and improve devtag: our legitimate interest (Art. 6(1)(f)).
+          which links and ads bring people and improve devtag: our legitimate interest (Art. 6(1)(f)).
         </li>
         <li>
           <strong>Security, preventing abuse and applying limits:</strong> our legitimate interest (Art. 6(1)(f)).
@@ -121,6 +126,7 @@ export default function PrivacyPage() {
           Visits to devtag.io: their daily keys are deleted the next day, so they can&apos;t be linked to anyone after
           that. Where you came from and your shares: with your account.
         </li>
+        <li>Reddit click IDs: deleted the day after your visit.</li>
       </ul>
 
       <h2>5. Who helps us</h2>
@@ -141,6 +147,9 @@ export default function PrivacyPage() {
         </li>
         <li>
           <strong>OpenAI</strong> (USA): turns your CV text into your page, when you ask.
+        </li>
+        <li>
+          <strong>Reddit</strong> (USA): measures our ads, with the click ID described above.
         </li>
       </ul>
       <p>

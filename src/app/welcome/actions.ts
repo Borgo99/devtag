@@ -1,8 +1,10 @@
 "use server";
 
+import { after } from "next/server";
 import { redirect } from "next/navigation";
+import { sendRedditSignUp } from "@/lib/reddit";
 import { currentAccount } from "@/lib/session";
-import { createProfile, sourceOfVisitor } from "@/lib/store";
+import { createProfile, todaysVisit } from "@/lib/store";
 import { usernameError } from "@/lib/usernames";
 import { visitor } from "@/lib/visits";
 
@@ -22,14 +24,18 @@ export async function claimAction(form: FormData) {
 
   // Where the user came from: their visit to the main site today, matched by its daily hash (api/hit).
   const who = await visitor();
-  const source = who && (await sourceOfVisitor(who));
+  const visit = who ? await todaysVisit(who) : undefined;
 
   const created = await createProfile(
     account.user.id,
     username,
     { profile: { name: account.user.name ?? "", role: "" }, skills: [] },
-    source,
+    visit?.source,
   );
   if (!created) back("This name is already taken.");
+
+  // They came from a Reddit ad: tell Reddit the ad brought a sign-up.
+  const clickId = visit?.clickId;
+  if (clickId) after(() => sendRedditSignUp(clickId).catch((error) => console.error("[reddit]", error)));
   redirect("/admin");
 }

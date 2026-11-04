@@ -70,6 +70,9 @@ create table if not exists site_visits (
   source  text not null,
   primary key (day, visitor)
 );
+-- Reddit's click ID, when the visit came from a Reddit ad: sent back to Reddit if the visitor claims a page
+-- (lib/reddit.ts). Cleared the next day.
+alter table site_visits add column if not exists click_id text;
 
 -- One row per click in the editor's share dialog: which place the page was shared to.
 create table if not exists shares (

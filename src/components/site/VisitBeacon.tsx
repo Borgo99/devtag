@@ -8,8 +8,10 @@ import { useEffect } from "react";
  */
 export function VisitBeacon() {
   useEffect(() => {
-    const ref = new URLSearchParams(window.location.search).get("ref");
-    navigator.sendBeacon("/api/hit", JSON.stringify({ ref, referrer: document.referrer }));
+    const params = new URLSearchParams(window.location.search);
+    // rdt_cid: the click ID Reddit adds to the links of its ads.
+    const body = { ref: params.get("ref"), clickId: params.get("rdt_cid"), referrer: document.referrer };
+    navigator.sendBeacon("/api/hit", JSON.stringify(body));
   }, []);
   return null;
 }

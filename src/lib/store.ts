@@ -173,22 +173,27 @@ async function saltToday() {
 /** Today's hash of a visitor of the main site; "site" keeps it apart from the hashes of page visits. */
 const SITE_VISITOR = "select sha256(salt || convert_to('site ' || $1, 'UTF8')) from visit_salts where day = current_date";
 
-/** Counts a visitor of the main site once a day, with where their first visit of the day came from. */
-export async function recordSiteVisit(visitor: string, source: string) {
+/**
+ * Counts a visitor of the main site once a day, with where their first visit of the day came from.
+ * `clickId`: Reddit's, when this visit came from a Reddit ad; a later visit's is kept too. Older ones are cleared.
+ */
+export async function recordSiteVisit(visitor: string, source: string, clickId?: string) {
   await saltToday();
+  await pool.query("update site_visits set click_id = null where day < current_date and click_id is not null");
   await pool.query(
-    `insert into site_visits (day, visitor, source) select current_date, (${SITE_VISITOR}), $2 on conflict do nothing`,
-    [visitor, source],
+    `insert into site_visits (day, visitor, source, click_id) select current_date, (${SITE_VISITOR}), $2, $3
+     on conflict (day, visitor) do update set click_id = excluded.click_id where excluded.click_id is not null`,
+    [visitor, source, clickId ?? null],
   );
 }
 
-/** Where today's visitor came from, if they visited the main site today. */
-export async function sourceOfVisitor(visitor: string) {
-  const { rows } = await pool.query<{ source: string }>(
-    `select source from site_visits where day = current_date and visitor = (${SITE_VISITOR})`,
+/** Where today's visitor came from, and Reddit's click ID if it was an ad, if they visited the main site today. */
+export async function todaysVisit(visitor: string) {
+  const { rows } = await pool.query<{ source: string; click_id: string | null }>(
+    `select source, click_id from site_visits where day = current_date and visitor = (${SITE_VISITOR})`,
     [visitor],
   );
-  return rows[0]?.source;
+  return rows[0] && { source: rows[0].source, clickId: rows[0].click_id ?? undefined };
 }
 
 /** Visitors of the user's page: all time, and in the last 7 days (today included). */
