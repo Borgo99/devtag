@@ -87,7 +87,7 @@ I switched careers through a coding bootcamp in 2022 and have shipped production
     },
   ],
 
-  portfolioStyle: "large",
+  portfolioStyle: "compact",
 
   projects: [
     {

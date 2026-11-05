@@ -73,6 +73,12 @@ export async function sources(days = 30) {
   return rows;
 }
 
+/** Accounts ever created: everyone who has signed in at least once. */
+export async function totalAccounts() {
+  const { rows } = await pool.query<{ n: number }>(`select count(*)::int as n from "user"`);
+  return rows[0].n;
+}
+
 /** Clicks in the share dialog in the last `days` days, by place. */
 export async function shares(days = 30) {
   const { rows } = await pool.query<{ place: string; clicks: number; users: number }>(

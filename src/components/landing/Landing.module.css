@@ -74,6 +74,8 @@
 
 /* Room for the fixed top bar above the orbit's highest icons (variables from Hero.module.css). */
 .hero {
+  /* A smaller photo than on profile pages (Hero.module.css: clamp(100px, 17vmin, 164px)). */
+  --avatar: clamp(86px, 14.5vmin, 140px);
   padding-top: calc(var(--rx-max) * var(--flat) + var(--icon) - var(--avatar) / 2 + 84px);
 }
 

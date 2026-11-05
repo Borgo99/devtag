@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { TextPage } from "@/components/site/TextPage";
-import { shares, sources, weeks } from "@/lib/funnel";
+import { shares, sources, totalAccounts, weeks } from "@/lib/funnel";
 import { currentUser } from "@/lib/session";
 import s from "./stats.module.css";
 
@@ -28,10 +28,13 @@ export default async function StatsPage() {
   const user = await currentUser();
   if (!user?.emailVerified || !ALLOWED.includes(user.email.toLowerCase())) notFound();
 
-  const [byWeek, bySource, byPlace] = await Promise.all([weeks(), sources(), shares()]);
+  const [accounts, byWeek, bySource, byPlace] = await Promise.all([totalAccounts(), weeks(), sources(), shares()]);
 
   return (
     <TextPage command="devtag stats" title="Funnel">
+      <p className={s.total}>
+        <strong>{accounts}</strong> accounts in total
+      </p>
       <h2>By week</h2>
       <p>
         Visitors of the landing and login pages, each once a day. Pages are grouped by the week they were claimed;

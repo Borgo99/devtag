@@ -32,3 +32,14 @@
 .rate {
   color: var(--faint);
 }
+
+.total {
+  font:
+    0.95rem var(--font-mono),
+    monospace;
+}
+
+.total strong {
+  font-size: 1.6rem;
+  color: var(--text);
+}
