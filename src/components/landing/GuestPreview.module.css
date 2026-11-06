@@ -76,14 +76,71 @@
 }
 
 .claim {
-  align-items: stretch;
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   margin-top: 6px;
 }
 
-.free {
-  margin-top: -6px;
+.label {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
   font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.label span {
+  font:
+    0.78rem var(--font-mono),
+    monospace;
+  color: var(--faint);
+}
+
+/* Claim, edit, publish: numbered, each with a line on what it means. */
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.steps li {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  column-gap: 10px;
+  font-size: 0.88rem;
+  counter-increment: step;
+}
+
+.steps li::before {
+  content: counter(step);
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--border-strong);
+  font:
+    0.72rem var(--font-mono),
+    monospace;
+  color: var(--muted);
+}
+
+.steps li:first-child::before {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.steps strong {
+  font-weight: 600;
+}
+
+.steps span {
+  font-size: 0.8rem;
   color: var(--faint);
 }
 
@@ -110,6 +167,26 @@
   min-width: 0;
   min-height: 0;
   padding: 16px;
+}
+
+/* Short laptop screens (1280×720): tighter, so the panel needn't scroll. */
+@media (min-width: 861px) and (max-height: 780px) {
+  .panel {
+    gap: 16px;
+    padding-block: 18px;
+  }
+
+  .body {
+    gap: 12px;
+  }
+
+  .title {
+    font-size: 1.8rem;
+  }
+
+  .steps {
+    gap: 6px;
+  }
 }
 
 @media (max-width: 860px) {
@@ -154,7 +231,33 @@
     margin-top: 0;
   }
 
-  .free {
+  /* One line: 1 Claim it → 2 Edit anything → 3 Publish. */
+  .steps {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .steps li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+  }
+
+  .steps li::before {
+    width: 18px;
+    height: 18px;
+    font-size: 0.65rem;
+  }
+
+  .steps li + li {
+    padding-left: 18px;
+    background: linear-gradient(var(--faint), var(--faint)) left center / 10px 1px no-repeat;
+  }
+
+  .steps span {
     display: none;
   }
 

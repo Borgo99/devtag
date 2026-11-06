@@ -13,6 +13,8 @@ interface Props {
   initial?: string;
   /** Under the box while it's empty. */
   hint?: string;
+  /** The address as a text field above the button, with a pencil: /preview's panel, where it comes filled in. */
+  field?: boolean;
 }
 
 /** "https:// [yourname] .devtag.io [Claim →]": checks the name as you type, then goes to sign-up. */
@@ -21,6 +23,7 @@ export function ClaimBox({
   className = "",
   initial = "",
   hint = "Pick your address, then fill in the page.",
+  field = false,
 }: Props) {
   const [name, setName] = useState(initial);
   const [check, setCheck] = useState<Check>({ state: "empty" });
@@ -46,7 +49,7 @@ export function ClaimBox({
   const available = check.state === "done" && check.available;
 
   return (
-    <div className={`${s.wrap} ${className}`}>
+    <div className={`${s.wrap} ${field ? s.field : ""} ${className}`}>
       <form
         className={s.box}
         data-available={available || undefined}
@@ -77,6 +80,20 @@ export function ClaimBox({
             }}
           />
           <span className={s.domain}>.{domain}</span>
+          {field && (
+            <svg
+              className={s.edit}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z" />
+            </svg>
+          )}
         </label>
         <button className={s.button}>Claim it →</button>
       </form>

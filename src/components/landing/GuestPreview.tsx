@@ -31,9 +31,7 @@ export function GuestPreview({ domain, suggestion, found }: Props) {
           <div className={s.body}>
             <p className={s.kicker}>✓ made from your CV</p>
             <h1 className={s.title}>Your page is ready</h1>
-            <p className={s.lead}>
-              This is how recruiters will see it. Claim your address to keep it, then fix anything and publish.
-            </p>
+            <p className={s.lead}>This is how recruiters will see it. Claim your address to keep it.</p>
             {found.length > 0 && (
               <div className={s.log} aria-label="Found in your CV">
                 {found.map((line) => (
@@ -43,8 +41,27 @@ export function GuestPreview({ domain, suggestion, found }: Props) {
                 ))}
               </div>
             )}
-            <ClaimBox domain={domain} className={s.claim} initial={suggestion} hint="Pick the address of your page." />
-            <p className={s.free}>Free. You sign in with GitHub, Google or LinkedIn next.</p>
+            <div className={s.claim}>
+              <p className={s.label}>
+                Your address <span>type to change it</span>
+              </p>
+              <ClaimBox domain={domain} initial={suggestion} hint="Pick the address of your page." field />
+            </div>
+            {/* What happens after claiming: the page isn't final, and nothing goes public by itself. */}
+            <ol className={s.steps} aria-label="Next">
+              <li>
+                <strong>Claim it</strong>
+                <span>free: sign in with GitHub, Google or LinkedIn</span>
+              </li>
+              <li>
+                <strong>Edit anything</strong>
+                <span>texts, photo, colors and sections, in the editor</span>
+              </li>
+              <li>
+                <strong>Publish</strong>
+                <span>nothing is public until you do</span>
+              </li>
+            </ol>
           </div>
 
           <p className={s.foot}>
