@@ -198,6 +198,7 @@ export function Editor({
       ...next,
       profile: {
         ...next.profile,
+        basedIn: next.profile.basedIn ?? config.profile.basedIn,
         image: config.profile.image,
         seniority: config.profile.seniority,
         years: config.profile.years,

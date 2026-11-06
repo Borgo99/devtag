@@ -60,6 +60,13 @@ test("seniority, years and open to work keep only known values", () => {
   assert.equal(cleanConfig({ profile: { name: "A", role: "B", years: 99 } }).profile.years, undefined);
 });
 
+test("based in is trimmed, and dropped when empty", () => {
+  const basedIn = (value: unknown) => cleanConfig({ profile: { name: "Ada", role: "Dev", basedIn: value } }).profile.basedIn;
+  assert.equal(basedIn("  Milan, Italy "), "Milan, Italy");
+  assert.equal(basedIn(" "), undefined);
+  assert.equal(basedIn(null), undefined);
+});
+
 test("site previews and portfolio positions keep only safe values", () => {
   const config = cleanConfig({
     profile: { name: "Ada", role: "Dev" },

@@ -115,6 +115,8 @@ export interface PortfolioConfig {
   profile: {
     name: string;
     role: string;
+    /** Where they're based, "Milan, Italy": shown under the role. Leave out to hide it. */
+    basedIn?: string;
     /** Photo URL. Leave out to use the generated avatar. */
     image?: string;
     /** Short paragraph for the About section. */

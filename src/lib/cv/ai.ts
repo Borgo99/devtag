@@ -20,6 +20,13 @@ const Page = z.object({
   profile: z.object({
     name: z.string(),
     role: z.string().describe("Current or target job title, at most 40 characters: it is typed out under the name."),
+    basedIn: z
+      .string()
+      .nullable()
+      .describe(
+        'Where the person lives, from the CV\'s header or contact details: city and country, "Milan, Italy". Never ' +
+          "a street address or postcode, and don't guess it from the jobs. Null if the CV doesn't say.",
+      ),
     about: z
       .string()
       .nullable()

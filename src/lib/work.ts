@@ -66,10 +66,12 @@ export function openToWorkDetails(config: PortfolioConfig) {
   const open = config.openToWork;
   if (!open?.active) return [];
   const later = open.from && open.from.padEnd(7, "-01") > thisMonth();
+  // Already under the role when it's where they're based.
+  const where = open.location?.toLowerCase() === config.profile.basedIn?.toLowerCase() ? undefined : open.location;
   return [
     open.types?.length ? either(open.types.map((t) => JOB_TYPES[t])) : undefined,
     open.modes?.length ? either(open.modes.map((m) => WORK_MODES[m])) : undefined,
-    open.location,
+    where,
     later ? `From ${monthName(open.from!)}` : "Available now",
   ].filter((part) => part !== undefined);
 }

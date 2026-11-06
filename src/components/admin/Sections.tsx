@@ -118,6 +118,13 @@ export function Sections({ config, update, review, reviewed, companies }: Props)
             }}
           />
         </Row>
+        <Text
+          label="Based in"
+          hint="Under your role · empty: hidden"
+          placeholder="Milan, Italy"
+          value={profile.basedIn}
+          onChange={(basedIn) => update({ profile: { ...profile, basedIn: basedIn || undefined } })}
+        />
         <LongText
           label="About"
           hint="A blank line starts a paragraph"
@@ -150,8 +157,8 @@ export function Sections({ config, update, review, reviewed, companies }: Props)
             />
             <Row>
               <Text
-                label="Location"
-                placeholder="Milan, EU time zones"
+                label="Where you'd work"
+                placeholder="Berlin, EU time zones"
                 value={open.location}
                 onChange={(location) => setOpen({ location: location || undefined })}
               />

@@ -212,6 +212,7 @@ export function cleanConfig(input: unknown, { complete = false } = {}): Portfoli
     profile: compact({
       name: text(profile.name) ?? "",
       role: text(profile.role) ?? "",
+      basedIn: text(profile.basedIn),
       image: url(profile.image),
       about: text(profile.about),
       seniority: oneOf<Seniority>(SENIORITY, profile.seniority),
