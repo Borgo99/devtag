@@ -9,6 +9,8 @@ export interface Week {
   /** Monday, "2026-11-02". */
   week: string;
   visitors: number;
+  /** Visitors who opened the login page (counted since 2026-11-06). */
+  login: number;
   /** Accounts created: signed in for the first time. */
   accounts: number;
   /** Names claimed: the page exists. */
@@ -26,7 +28,11 @@ export async function weeks(count = 8) {
        select generate_series(date_trunc('week', now()) - ($1 - 1) * interval '1 week', date_trunc('week', now()),
                               interval '1 week')::date as week
      ),
-     visits as (select date_trunc('week', day)::date as week, count(*)::int as visitors from site_visits group by 1),
+     visits as (
+       select date_trunc('week', day)::date as week, count(*)::int as visitors,
+         count(*) filter (where reached_login)::int as login
+       from site_visits group by 1
+     ),
      accounts as (select date_trunc('week', "createdAt")::date as week, count(*)::int as accounts from "user" group by 1),
      pages as (
        select date_trunc('week', p.created_at)::date as week,
@@ -37,7 +43,8 @@ export async function weeks(count = 8) {
          count(*) filter (where exists (select 1 from page_visits v where v.user_id = p.user_id))::int as visited
        from profiles p group by 1
      )
-     select to_char(week, 'YYYY-MM-DD') as week, coalesce(visitors, 0) as visitors, coalesce(accounts, 0) as accounts,
+     select to_char(week, 'YYYY-MM-DD') as week, coalesce(visitors, 0) as visitors, coalesce(login, 0) as login,
+       coalesce(accounts, 0) as accounts,
        coalesce(claimed, 0) as claimed, coalesce(imported, 0) as imported, coalesce(published, 0) as published,
        coalesce(shared, 0) as shared, coalesce(visited, 0) as visited
      from weeks left join visits using (week) left join accounts using (week) left join pages using (week)
@@ -50,6 +57,7 @@ export async function weeks(count = 8) {
 export interface Source {
   source: string;
   visitors: number;
+  login: number;
   claimed: number;
   published: number;
 }
@@ -58,14 +66,16 @@ export interface Source {
 export async function sources(days = 30) {
   const { rows } = await pool.query<Source>(
     `with v as (
-       select source, count(*)::int as visitors from site_visits where day > current_date - $1::int group by 1
+       select source, count(*)::int as visitors, count(*) filter (where reached_login)::int as login
+       from site_visits where day > current_date - $1::int group by 1
      ),
      p as (
        select coalesce(source, 'unknown') as source, count(*)::int as claimed,
          count(*) filter (where first_published_at is not null)::int as published
        from profiles where created_at > now() - $1 * interval '1 day' group by 1
      )
-     select source, coalesce(visitors, 0) as visitors, coalesce(claimed, 0) as claimed, coalesce(published, 0) as published
+     select source, coalesce(visitors, 0) as visitors, coalesce(login, 0) as login, coalesce(claimed, 0) as claimed,
+       coalesce(published, 0) as published
      from v full join p using (source)
      order by visitors desc, claimed desc`,
     [days],

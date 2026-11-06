@@ -37,8 +37,10 @@ export default async function StatsPage() {
       </p>
       <h2>By week</h2>
       <p>
-        Visitors of the landing and login pages, each once a day. Pages are grouped by the week they were claimed;
-        each step after that counts those pages, with its share of the step before (visited: of published).
+        Visitors of the landing and login pages, each once a day; sign-in page: those who opened the login page
+        (counted since 6 November 2026), with their share of visitors, as accounts. Pages are grouped by the week
+        they were claimed; each step after that counts those pages, with its share of the step before (visited: of
+        published).
       </p>
       <div className={s.scroll}>
         <table className={s.table}>
@@ -46,6 +48,7 @@ export default async function StatsPage() {
             <tr>
               <th>Week of</th>
               <th>Visitors</th>
+              <th>Sign-in page</th>
               <th>Accounts</th>
               <th>Pages</th>
               <th>Imported</th>
@@ -59,6 +62,9 @@ export default async function StatsPage() {
               <tr key={w.week}>
                 <td>{w.week}</td>
                 <td>{w.visitors}</td>
+                <td>
+                  <Step n={w.login} of={w.visitors} />
+                </td>
                 <td>
                   <Step n={w.accounts} of={w.visitors} />
                 </td>
@@ -94,6 +100,7 @@ export default async function StatsPage() {
             <tr>
               <th>Source</th>
               <th>Visitors</th>
+              <th>Sign-in page</th>
               <th>Pages</th>
               <th>Published</th>
             </tr>
@@ -103,6 +110,9 @@ export default async function StatsPage() {
               <tr key={row.source}>
                 <td>{row.source}</td>
                 <td>{row.visitors}</td>
+                <td>
+                  <Step n={row.login} of={row.visitors} />
+                </td>
                 <td>
                   <Step n={row.claimed} of={row.visitors} />
                 </td>

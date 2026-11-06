@@ -27,7 +27,7 @@ export default async function LoginPage({ searchParams }: Props) {
   return (
     <>
       <Background config={sample} />
-      <VisitBeacon />
+      <VisitBeacon login />
       <main className={s.page}>
         <a href="/" className={s.back}>
           <span aria-hidden>←</span> Back

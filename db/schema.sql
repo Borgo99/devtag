@@ -76,6 +76,9 @@ create table if not exists site_visits (
 -- Reddit's click ID, when the visit came from a Reddit ad: sent back to Reddit if the visitor claims a page
 -- (lib/reddit.ts). Cleared the next day.
 alter table site_visits add column if not exists click_id text;
+-- The visitor opened the login page that day: where the funnel loses people, before or at sign-in. Counted since
+-- 2026-11-06; earlier rows are false.
+alter table site_visits add column if not exists reached_login boolean not null default false;
 
 -- One row per click in the editor's share dialog: which place the page was shared to.
 create table if not exists shares (

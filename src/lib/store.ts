@@ -184,14 +184,19 @@ const SITE_VISITOR = "select sha256(salt || convert_to('site ' || $1, 'UTF8')) f
 /**
  * Counts a visitor of the main site once a day, with where their first visit of the day came from.
  * `clickId`: Reddit's, when this visit came from a Reddit ad; a later visit's is kept too. Older ones are cleared.
+ * `login`: this visit is to the login page; the day's row keeps it.
  */
-export async function recordSiteVisit(visitor: string, source: string, clickId?: string) {
+export async function recordSiteVisit(visitor: string, source: string, clickId?: string, login = false) {
   await saltToday();
   await pool.query("update site_visits set click_id = null where day < current_date and click_id is not null");
   await pool.query(
-    `insert into site_visits (day, visitor, source, click_id) select current_date, (${SITE_VISITOR}), $2, $3
-     on conflict (day, visitor) do update set click_id = excluded.click_id where excluded.click_id is not null`,
-    [visitor, source, clickId ?? null],
+    `insert into site_visits (day, visitor, source, click_id, reached_login)
+       select current_date, (${SITE_VISITOR}), $2, $3, $4
+     on conflict (day, visitor) do update
+       set click_id = coalesce(excluded.click_id, site_visits.click_id),
+         reached_login = site_visits.reached_login or excluded.reached_login
+       where excluded.click_id is not null or (excluded.reached_login and not site_visits.reached_login)`,
+    [visitor, source, clickId ?? null, login],
   );
 }
 
