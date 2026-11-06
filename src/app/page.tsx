@@ -33,7 +33,7 @@ import s from "@/components/landing/Landing.module.css";
  */
 const HERO: "empty-orbit" | "filled-orbit" | "before-after" = "before-after";
 
-const TAGLINE = "your portfolio in two minutes";
+const TAGLINE = "stand out to recruiters";
 
 const STROKE = {
   page: "M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h4",
@@ -85,7 +85,7 @@ export default function Landing() {
         <span className={s.nowrap}>Drop your CV.</span> <span className={s.grad}>Get this page.</span>
       </h1>
       <p className={s.lead}>
-        Your skills, jobs and projects, filled in from your PDF and live at <strong>{you}</strong>.
+        Filled in from your PDF in two minutes and live at <strong>{you}</strong>.
       </p>
       <ClaimBox domain={DISPLAY_DOMAIN} className={s.claim} />
       <p className={s.trust}>
