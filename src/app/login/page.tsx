@@ -29,6 +29,9 @@ export default async function LoginPage({ searchParams }: Props) {
       <Background config={sample} />
       <VisitBeacon />
       <main className={s.page}>
+        <a href="/" className={s.back}>
+          <span aria-hidden>←</span> Back
+        </a>
         <a href="/" className={s.logo}>
           <LogoMark />
           devtag<span className={s.cursor}>_</span>
