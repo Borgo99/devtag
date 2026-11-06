@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import type { PortfolioConfig } from "@/lib/types";
 import { cleanConfig, publishProblems } from "@/lib/clean";
 import { isWebAddress } from "@/lib/text";
@@ -33,6 +33,11 @@ type SaveState = "saved" | "saving" | "error";
 const SAVE_DELAY = 700;
 /** Wait for the address to be typed out before reading the site. */
 const SITE_DELAY = 1500;
+/** The form's width next to the preview, until the line between them is dragged. */
+const FORM_WIDTH = 600;
+/** The narrowest each side can be dragged to; the same as in Editor.module.css. 420: room for the phone view. */
+const FORM_MIN = 380;
+const PREVIEW_MIN = 420;
 
 /**
  * Whether an import would overwrite something the user wrote, so it asks first. The name doesn't count:
@@ -96,6 +101,33 @@ export function Editor({
   const [view, setView] = useState<"edit" | "preview">("edit");
   // Wide screens: the preview can be hidden to give the form the whole width (narrow ones use the tabs).
   const [showPreview, setShowPreview] = useState(true);
+  const [formWidth, setFormWidth] = useState(FORM_WIDTH);
+  const [resizing, setResizing] = useState(false);
+  const main = useRef<HTMLDivElement>(null);
+  const form = useRef<HTMLDivElement>(null);
+
+  /** Dragging the line between the form and the preview: the form follows the pointer, within both minimums. */
+  function resize(event: PointerEvent<HTMLDivElement>) {
+    if (event.button !== 0) return;
+    event.preventDefault();
+    const line = event.currentTarget;
+    // From the width shown, which can be less than formWidth after the window got narrower.
+    const offset = event.clientX - form.current!.offsetWidth;
+    const max = main.current!.clientWidth - line.offsetWidth - PREVIEW_MIN;
+    const move = (e: globalThis.PointerEvent) =>
+      setFormWidth(Math.round(Math.min(max, Math.max(FORM_MIN, e.clientX - offset))));
+    line.setPointerCapture(event.pointerId);
+    line.addEventListener("pointermove", move);
+    line.addEventListener(
+      "lostpointercapture",
+      () => {
+        line.removeEventListener("pointermove", move);
+        setResizing(false);
+      },
+      { once: true },
+    );
+    setResizing(true);
+  }
 
   const body = JSON.stringify({ draft: config, review });
   const saved = useRef(body);
@@ -287,8 +319,15 @@ export function Editor({
         </div>
       </header>
 
-      <div className={s.main} data-view={view} data-preview={showPreview ? undefined : "hidden"}>
-        <div className={s.form}>
+      <div
+        ref={main}
+        className={s.main}
+        data-view={view}
+        data-preview={showPreview ? undefined : "hidden"}
+        data-resizing={resizing || undefined}
+        style={{ "--form-width": `${formWidth}px` } as CSSProperties}
+      >
+        <div ref={form} className={s.form}>
           {(message || problems.length > 0) && (
             <p className={s.message}>{message ?? `${problems.join(" ")} Then you can publish.`}</p>
           )}
@@ -303,9 +342,12 @@ export function Editor({
         </div>
         {/* Hidden, it's not rendered at all: no reloads on every save. */}
         {showPreview && (
-          <div className={s.previewPane}>
-            <Preview version={version} address={address} />
-          </div>
+          <>
+            <div className={s.divider} onPointerDown={resize} title="Drag to resize" aria-hidden />
+            <div className={s.previewPane}>
+              <Preview version={version} address={address} />
+            </div>
+          </>
         )}
       </div>
       {sharing && <SharePanel address={address} pageUrl={pageUrl} onClose={() => setSharing(false)} />}

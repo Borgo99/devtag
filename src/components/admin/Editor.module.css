@@ -217,7 +217,47 @@
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(380px, 540px) minmax(0, 1fr);
+  /* The form is --form-width (set by dragging the line), the preview takes the rest. The form gives way first
+     when the window gets narrower: it never goes below 380px, the preview never below 420px (Editor.tsx). */
+  grid-template-columns: minmax(380px, var(--form-width, 600px)) 12px minmax(420px, 1fr);
+}
+
+/* The line between the form and the preview: drag it to share the width differently. */
+.divider {
+  position: relative;
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 40px;
+  border-radius: 2px;
+  background: var(--border-strong);
+  translate: -50% -50%;
+  transition:
+    height 0.15s,
+    background 0.15s;
+}
+
+.divider:hover::after,
+.main[data-resizing] .divider::after {
+  height: 64px;
+  background: var(--accent);
+}
+
+/* While dragging: the preview's page can't catch the pointer, and no text gets selected. */
+.main[data-resizing] {
+  cursor: col-resize;
+  user-select: none;
+}
+
+.main[data-resizing] .previewPane {
+  pointer-events: none;
 }
 
 .form {
@@ -357,7 +397,8 @@
   }
 
   .main[data-view="edit"] .previewPane,
-  .main[data-view="preview"] .form {
+  .main[data-view="preview"] .form,
+  .divider {
     display: none;
   }
 
