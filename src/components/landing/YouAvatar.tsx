@@ -17,11 +17,11 @@ export function TypedNameProvider({ children }: { children: ReactNode }) {
 export const useSetTypedName = () => useContext(Typed)?.setName;
 
 /**
- * The landing's profile picture: a silhouette, then the initials of the address being typed
- * ("andrea-rossi" → "AR_"), the way a page without a photo shows them.
+ * The landing's profile picture: a silhouette (or the initials of `name`), then the initials of the address
+ * being typed ("andrea-rossi" → "AR_"), the way a page without a photo shows them.
  */
-export function YouAvatar() {
-  const words = (useContext(Typed)?.name ?? "").replace(/-+/g, " ").trim();
+export function YouAvatar({ name }: { name?: string }) {
+  const words = (useContext(Typed)?.name ?? "").replace(/-+/g, " ").trim() || name;
 
   if (!words)
     return (
@@ -38,5 +38,14 @@ export function YouAvatar() {
       {initials(words)}
       <span className={avatar.cursor}>_</span>
     </span>
+  );
+}
+
+/** "yourname.devtag.io", with the address being typed in place of "yourname". */
+export function TypedAddress({ domain }: { domain: string }) {
+  return (
+    <>
+      <b>{useContext(Typed)?.name || "yourname"}</b>.{domain}
+    </>
   );
 }

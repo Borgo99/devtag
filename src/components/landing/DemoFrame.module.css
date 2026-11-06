@@ -71,9 +71,17 @@
   color: var(--accent);
 }
 
+/* The shape of the page drawn inside (DemoFrame.tsx): desktop, or phone on small screens. */
 .box {
   position: relative;
   overflow: hidden;
+  aspect-ratio: 1280 / 800;
+}
+
+@media (max-width: 640px) {
+  .box {
+    aspect-ratio: 390 / 680;
+  }
 }
 
 .cover {
@@ -81,7 +89,7 @@
   inset: 0;
 }
 
-/* Drawn at desktop size, scaled down; clicks go to the link around it. */
+/* Drawn at desktop (or phone) size, scaled down; clicks go to the link around it. */
 .box iframe {
   position: absolute;
   top: 0;

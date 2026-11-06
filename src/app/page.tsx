@@ -3,12 +3,14 @@ import { resolveSkill } from "@/lib/icons";
 import { orbitLayout } from "@/lib/orbit";
 import { orbitSkills } from "@/lib/skills";
 import { DEMO } from "@/lib/profiles";
-import { DISPLAY_DOMAIN, profileUrl } from "@/lib/site";
+import demo from "@/demo/config";
+import { DISPLAY_DOMAIN, REPO_URL, profileUrl } from "@/lib/site";
 import { Background } from "@/components/profile/Background";
 import { Orbit } from "@/components/profile/Orbit";
 import { Section } from "@/components/profile/Section";
 import { SkillIcon } from "@/components/profile/SkillIcon";
 import { RevealObserver } from "@/components/profile/RevealObserver";
+import { BeforeAfter } from "@/components/landing/BeforeAfter";
 import { ClaimBox } from "@/components/landing/ClaimBox";
 import { DemoFrame } from "@/components/landing/DemoFrame";
 import { HiringData } from "@/components/landing/HiringData";
@@ -21,7 +23,15 @@ import hero from "@/components/profile/Hero.module.css";
 import avatar from "@/components/profile/Avatar.module.css";
 import s from "@/components/landing/Landing.module.css";
 
-/** The landing page: the hero of a profile page, with the visitor in the middle. */
+/** The landing page: a hero that shows what you get, then how, why, a demo and the features. */
+
+/**
+ * Which hero to show, to compare designs:
+ * - "empty-orbit": skills orbiting a silhouette, which turns into the initials of the name being typed
+ * - "filled-orbit": Nora's skills orbiting her initials (open to work), with her CV beside them
+ * - "before-after": Nora's CV next to the page made from it, as in the ads
+ */
+const HERO: "empty-orbit" | "filled-orbit" | "before-after" = "before-after";
 
 const TAGLINE = "your portfolio in two minutes";
 
@@ -51,12 +61,42 @@ function Glyph({ d }: { d: string }) {
 }
 
 export default function Landing() {
-  const orbit = orbitSkills(sample);
+  const filled = HERO === "filled-orbit";
+  const orbit = orbitSkills(filled ? demo : sample);
   const top = orbit.top.map(resolveSkill);
   const rest = orbit.rest.map(resolveSkill);
   const outerRing = orbitLayout(top.length, rest.length).at(-1)!;
   const logos = ["TypeScript", "Kubernetes", "Go", "Python", "Rust", "PostgreSQL", "Swift"].map(resolveSkill);
   const you = `you.${DISPLAY_DOMAIN}`;
+
+  // The words of the ads first: what you drop, what you get, that it's free.
+  const copy = (
+    <>
+      <p className={`${hero.role} ${s.tagline}`}>
+        <span className={hero.prompt} aria-hidden>
+          &gt;
+        </span>
+        <span className={hero.typed} style={{ "--chars": TAGLINE.length } as CSSProperties}>
+          {TAGLINE}
+        </span>
+        <span className={hero.caret} aria-hidden />
+      </p>
+      <h1 className={s.title}>
+        <span className={s.nowrap}>Drop your CV.</span> <span className={s.grad}>Get this page.</span>
+      </h1>
+      <p className={s.lead}>
+        Your skills, jobs and projects, filled in from your PDF and live at <strong>{you}</strong>.
+      </p>
+      <ClaimBox domain={DISPLAY_DOMAIN} className={s.claim} />
+      <p className={s.trust}>
+        Free and{" "}
+        <a href={REPO_URL} target="_blank" rel="noopener noreferrer">
+          open source ↗
+        </a>{" "}
+        · <a href="#demo">see an example ↓</a>
+      </p>
+    </>
+  );
 
   return (
     <>
@@ -84,42 +124,51 @@ export default function Landing() {
 
       <TypedNameProvider>
         <main>
-          <section className={`${hero.hero} ${s.hero}`} style={{ "--lift-max": outerRing.lift } as CSSProperties}>
-            <div className={hero.center}>
-              <Orbit skills={[...top, ...rest]} topCount={top.length} />
-              <div className={avatar.avatar}>
-                <div className={avatar.halo} />
-                <div className={avatar.face}>
-                  <YouAvatar />
+          {HERO === "before-after" ? (
+            <section className={s.split}>
+              <div className={s.splitCopy} id="claim">
+                {copy}
+              </div>
+              <BeforeAfter domain={DISPLAY_DOMAIN} />
+            </section>
+          ) : (
+            <section className={`${hero.hero} ${s.hero}`} style={{ "--lift-max": outerRing.lift } as CSSProperties}>
+              <div className={hero.center}>
+                <Orbit skills={[...top, ...rest]} topCount={top.length} />
+                <div className={avatar.avatar} data-open={filled || undefined}>
+                  <div className={avatar.halo} />
+                  <div className={avatar.face}>
+                    <YouAvatar name={filled ? demo.profile.name : undefined} />
+                  </div>
+                  {filled && (
+                    <span className={avatar.tag} aria-hidden>
+                      open to work
+                    </span>
+                  )}
+                </div>
+                {filled && (
+                  <span className={s.cvChip} aria-hidden>
+                    <img src="/landing/nora-cv.webp" width={420} height={594} alt="" />
+                    <svg viewBox="0 0 40 30" fill="none">
+                      <path
+                        d="M3 6 C 18 2, 30 8, 35 22 M27 18 L 35 24 L 38 14"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
+                )}
+              </div>
+
+              <div className={hero.below}>
+                <div className={`${hero.identity} ${s.identity}`} id="claim">
+                  {copy}
                 </div>
               </div>
-            </div>
-
-            <div className={hero.below}>
-              <div className={`${hero.identity} ${s.identity}`} id="claim">
-                <p className={hero.role}>
-                  <span className={hero.prompt} aria-hidden>
-                    &gt;
-                  </span>
-                  <span className={hero.typed} style={{ "--chars": TAGLINE.length } as CSSProperties}>
-                    {TAGLINE}
-                  </span>
-                  <span className={hero.caret} aria-hidden />
-                </p>
-                <h1 className={s.title}>
-                  The portfolio you&apos;d build <span className={s.nowrap}>if you had a free week.</span>
-                </h1>
-                <p className={s.lead}>
-                  Drop your CV and get a page like this one at <strong>{you}</strong>: your skills in orbit, a page for
-                  every project, and link previews that look great on LinkedIn.
-                </p>
-                <ClaimBox domain={DISPLAY_DOMAIN} />
-                <a href="#demo" className={s.example}>
-                  or see an example page ↓
-                </a>
-              </div>
-            </div>
-          </section>
+            </section>
+          )}
 
           <Section id="how" index={1} command="devtag import cv.pdf" title="From PDF to page in two minutes">
             <ol className={s.steps}>

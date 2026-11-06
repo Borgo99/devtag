@@ -96,8 +96,17 @@
   color: transparent;
 }
 
+/* The headline breaks only between its two sentences. */
 .nowrap {
   white-space: nowrap;
+}
+
+/* "Get this page.": the ads' green-to-blue. */
+.grad {
+  white-space: nowrap;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  background-clip: text;
 }
 
 .lead {
@@ -113,17 +122,93 @@
   color: var(--accent);
 }
 
-.example {
+/* "Free and open source": the first question on Reddit, answered under the claim box. */
+.trust {
   margin-top: -6px;
   font:
     0.85rem var(--font-mono),
     monospace;
-  color: var(--faint);
+  color: var(--muted);
+}
+
+.trust a {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 3px;
   transition: color 0.2s ease;
 }
 
-.example:hover {
-  color: var(--text);
+.trust a:hover {
+  color: var(--accent);
+}
+
+/* Hero "filled-orbit": Nora's CV beside her initials, with an arrow into them. */
+.cvChip {
+  position: absolute;
+  z-index: 4;
+  top: calc(var(--avatar) * -0.35);
+  right: calc(100% + var(--icon) * 0.8);
+  width: calc(var(--avatar) * 0.55);
+  rotate: -8deg;
+  color: var(--accent);
+  animation: fade 0.8s ease 1s both;
+}
+
+.cvChip img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 3px;
+  box-shadow: 0 16px 30px -8px rgba(0, 0, 0, 0.8);
+}
+
+.cvChip svg {
+  position: absolute;
+  top: 18%;
+  left: calc(100% + 2px);
+  width: calc(var(--icon) * 0.75);
+  rotate: 8deg;
+}
+
+/* Hero "before-after": the words on the left, the picture on the right; stacked on small screens. */
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: 48px;
+  width: min(100% - 32px, 1180px);
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: 100px 0 64px;
+}
+
+.splitCopy {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+  animation: fade 0.9s ease both;
+}
+
+/* Keeps the words readable over the code scrolling in the background. */
+.splitCopy::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -60px -80px;
+  background: radial-gradient(farthest-side, rgba(5, 7, 10, 0.88) 55%, transparent);
+  pointer-events: none;
+}
+
+.splitCopy .tagline {
+  justify-content: flex-start;
+}
+
+.splitCopy .claim {
+  align-items: flex-start;
 }
 
 /* How it works */
@@ -547,11 +632,61 @@
   }
 }
 
-@media (max-width: 420px) {
-  .nowrap {
-    white-space: normal;
+@media (max-width: 860px) {
+  /* The picture first, then the words (column-reverse keeps the words first for screen readers). */
+  .split {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    gap: 22px;
+    min-height: 0;
+    padding: 76px 0 48px;
   }
 
+  .splitCopy {
+    align-items: center;
+    text-align: center;
+  }
+
+  .splitCopy .tagline {
+    justify-content: center;
+  }
+
+  .splitCopy .claim {
+    align-items: center;
+  }
+}
+
+/* Short laptop screens (1280×720): narrower rings, so the "free" line under the claim box still shows. */
+@media (min-width: 521px) and (max-height: 760px) {
+  .hero {
+    --rx-max: min(calc(50vw - var(--icon) * 0.6 - 8px), 360px);
+  }
+
+  .identity {
+    gap: 14px;
+  }
+}
+
+/* Phones: a smaller orbit and tighter text, so the claim button fits on the first screen,
+   even in the Reddit app's browser (about 390×660). */
+@media (max-width: 520px) {
+  .hero {
+    --avatar: 72px;
+    --icon: 34px;
+  }
+
+  .identity,
+  .splitCopy {
+    gap: 12px;
+  }
+
+  .trust {
+    margin-top: -2px;
+  }
+}
+
+@media (max-width: 420px) {
   .nav {
     padding-left: 16px;
   }
@@ -559,6 +694,12 @@
 
 @keyframes blink {
   50% {
+    opacity: 0;
+  }
+}
+
+@keyframes fade {
+  from {
     opacity: 0;
   }
 }

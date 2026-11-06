@@ -1,0 +1,142 @@
+/* The CV sticks out of the window's top-left corner: the padding makes room for it. */
+.picture {
+  position: relative;
+  padding: 52px 0 0 64px;
+}
+
+.window {
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid var(--border-strong);
+  background: #0b0f14;
+  box-shadow:
+    0 40px 120px -40px color-mix(in srgb, var(--accent) 30%, transparent),
+    0 30px 80px -30px rgba(0, 0, 0, 0.9);
+  animation: rise 0.9s var(--ease-out) both;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.dots {
+  display: flex;
+  gap: 7px;
+}
+
+.dots i {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #ff5f57;
+}
+
+.dots i:nth-child(2) {
+  background: #febc2e;
+}
+
+.dots i:nth-child(3) {
+  background: #28c840;
+}
+
+/* Centered, so the CV over the window's corner never hides it. */
+.address {
+  flex: 1;
+  min-width: 0;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 4px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  font:
+    0.85rem var(--font-mono),
+    monospace;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--muted);
+}
+
+.address b {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.shot {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+
+.cv {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 30%;
+  height: auto;
+  border-radius: 4px;
+  rotate: -6deg;
+  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.75);
+  animation: drop 0.9s var(--ease-out) 0.25s both;
+}
+
+/* From the CV's corner down into the window. */
+.arrow {
+  position: absolute;
+  top: 4px;
+  left: calc(30% + 10px);
+  z-index: 1;
+  width: 60px;
+  animation: fade 0.6s ease 0.9s both;
+}
+
+@media (max-width: 860px) {
+  .picture {
+    padding: 22px 0 0 34px;
+  }
+
+  /* Wider than tall, so the claim box still fits on a phone screen: the orbit, name and open-to-work line. */
+  .shot {
+    aspect-ratio: 2 / 1;
+    object-position: 50% 40%;
+  }
+
+  .cv {
+    width: 24%;
+  }
+
+  .arrow {
+    top: 0;
+    left: calc(24% + 4px);
+    width: 38px;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 24px;
+  }
+}
+
+@keyframes drop {
+  from {
+    opacity: 0;
+    translate: -16px -24px;
+    rotate: -14deg;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}

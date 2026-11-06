@@ -81,12 +81,7 @@
     translate 0.2s ease;
 }
 
-.button:disabled {
-  opacity: 0.45;
-  cursor: default;
-}
-
-.button:hover:not(:disabled) {
+.button:hover {
   translate: 0 -1px;
 }
 
