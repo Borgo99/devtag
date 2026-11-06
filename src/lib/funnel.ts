@@ -9,6 +9,8 @@ export interface Week {
   /** Monday, "2026-11-02". */
   week: string;
   visitors: number;
+  /** CV imports without an account (the landing's), cancelled ones included. */
+  tried: number;
   /** Visitors who opened the login page (counted since 2026-11-06). */
   login: number;
   /** Accounts created: signed in for the first time. */
@@ -33,21 +35,27 @@ export async function weeks(count = 8) {
          count(*) filter (where reached_login)::int as login
        from site_visits group by 1
      ),
+     tries as (select date_trunc('week', created_at)::date as week, count(*)::int as tried from guest_imports group by 1),
      accounts as (select date_trunc('week', "createdAt")::date as week, count(*)::int as accounts from "user" group by 1),
      pages as (
        select date_trunc('week', p.created_at)::date as week,
          count(*)::int as claimed,
-         count(*) filter (where exists (select 1 from cv_imports i where i.user_id = p.user_id))::int as imported,
+         count(*) filter (
+           where exists (select 1 from cv_imports i where i.user_id = p.user_id)
+             or exists (select 1 from guest_imports g where g.user_id = p.user_id)
+         )::int as imported,
          count(*) filter (where p.first_published_at is not null)::int as published,
          count(*) filter (where exists (select 1 from shares s where s.user_id = p.user_id))::int as shared,
          count(*) filter (where exists (select 1 from page_visits v where v.user_id = p.user_id))::int as visited
        from profiles p group by 1
      )
-     select to_char(week, 'YYYY-MM-DD') as week, coalesce(visitors, 0) as visitors, coalesce(login, 0) as login,
+     select to_char(week, 'YYYY-MM-DD') as week, coalesce(visitors, 0) as visitors, coalesce(tried, 0) as tried,
+       coalesce(login, 0) as login,
        coalesce(accounts, 0) as accounts,
        coalesce(claimed, 0) as claimed, coalesce(imported, 0) as imported, coalesce(published, 0) as published,
        coalesce(shared, 0) as shared, coalesce(visited, 0) as visited
-     from weeks left join visits using (week) left join accounts using (week) left join pages using (week)
+     from weeks left join visits using (week) left join tries using (week) left join accounts using (week)
+       left join pages using (week)
      order by week desc`,
     [count],
   );

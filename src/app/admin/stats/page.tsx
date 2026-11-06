@@ -37,10 +37,11 @@ export default async function StatsPage() {
       </p>
       <h2>By week</h2>
       <p>
-        Visitors of the landing and login pages, each once a day; sign-in page: those who opened the login page
-        (counted since 6 November 2026), with their share of visitors, as accounts. Pages are grouped by the week
-        they were claimed; each step after that counts those pages, with its share of the step before (visited: of
-        published).
+        Visitors of the landing and login pages, each once a day. Tried: CV imports on the landing, without an account.
+        Sign-in page: visitors who opened the login page (counted since 6 November 2026). These and accounts show their
+        share of visitors. Pages are grouped by the week they were claimed; each step after that counts those pages,
+        with its share of the step before (visited: of published). Imported includes pages claimed with the one made on
+        the landing.
       </p>
       <div className={s.scroll}>
         <table className={s.table}>
@@ -48,6 +49,7 @@ export default async function StatsPage() {
             <tr>
               <th>Week of</th>
               <th>Visitors</th>
+              <th>Tried</th>
               <th>Sign-in page</th>
               <th>Accounts</th>
               <th>Pages</th>
@@ -62,6 +64,9 @@ export default async function StatsPage() {
               <tr key={w.week}>
                 <td>{w.week}</td>
                 <td>{w.visitors}</td>
+                <td>
+                  <Step n={w.tried} of={w.visitors} />
+                </td>
                 <td>
                   <Step n={w.login} of={w.visitors} />
                 </td>

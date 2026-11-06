@@ -32,6 +32,21 @@ create table if not exists cv_imports (
 create index if not exists cv_imports_by_user on cv_imports (user_id, created_at);
 create index if not exists cv_imports_by_time on cv_imports (created_at);
 
+-- CV imports without an account (the landing's "drop your CV"). The page made from the CV (`draft`) is kept for a
+-- day behind a random cookie (`token`), so its visitor can see it (/preview) and claim it; claiming moves it to the
+-- new account and sets `user_id`. After a day the draft is deleted; the row stays, for the limits and the funnel.
+-- `visitor` is that day's hash of the visitor, as in site_visits, for the limit per visitor.
+create table if not exists guest_imports (
+  id         bigint generated always as identity primary key,
+  token      text not null unique,
+  visitor    bytea,
+  draft      jsonb,
+  user_id    text references "user" (id) on delete set null,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists guest_imports_by_time on guest_imports (created_at);
+
 -- One row per site read for a project's preview (api/site-preview), to cap them per account.
 create table if not exists site_reads (
   id         bigint generated always as identity primary key,

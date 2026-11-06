@@ -8,13 +8,16 @@ import s from "./YouAvatar.module.css";
 /** The address being typed in a claim box, shared with the profile picture at the top of the landing. */
 const Typed = createContext<{ name: string; setName: (name: string) => void } | null>(null);
 
-export function TypedNameProvider({ children }: { children: ReactNode }) {
-  const [name, setName] = useState("");
+export function TypedNameProvider({ children, initial = "" }: { children: ReactNode; initial?: string }) {
+  const [name, setName] = useState(initial);
   return <Typed.Provider value={{ name, setName }}>{children}</Typed.Provider>;
 }
 
 /** For the claim boxes; undefined outside the landing. */
 export const useSetTypedName = () => useContext(Typed)?.setName;
+
+/** The address being typed; "" outside the landing and /preview. */
+export const useTypedName = () => useContext(Typed)?.name ?? "";
 
 /**
  * The landing's profile picture: a silhouette (or the initials of `name`), then the initials of the address

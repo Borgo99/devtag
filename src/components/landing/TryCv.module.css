@@ -1,0 +1,156 @@
+/* The same pill as ClaimBox.module.css, dashed: something to drop on. */
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: min(100%, 560px);
+}
+
+.box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 6px 6px 6px 8px;
+  border-radius: 999px;
+  border: 1.5px dashed color-mix(in srgb, var(--accent) 45%, var(--border-strong));
+  background: rgba(13, 17, 23, 0.85);
+  box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.8);
+  cursor: pointer;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    scale 0.25s ease;
+}
+
+.box:hover,
+.box:focus-within {
+  border-color: var(--accent);
+}
+
+/* The input is hidden but focusable: its focus shows on the whole box. */
+.box:has(input:focus-visible) {
+  box-shadow:
+    0 0 0 4px var(--accent-soft),
+    0 20px 50px -20px rgba(0, 0, 0, 0.8);
+}
+
+.box[data-over] {
+  border-style: solid;
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 6px var(--accent-soft),
+    0 20px 50px -20px rgba(0, 0, 0, 0.8);
+  scale: 1.02;
+}
+
+.box[data-busy] {
+  cursor: progress;
+}
+
+.icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  text-align: left;
+}
+
+.text strong {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.text span {
+  font:
+    0.75rem var(--font-mono),
+    monospace;
+  color: var(--faint);
+}
+
+/* A block, not a flex box: flex would drop the spaces around "(PDF)". */
+.button {
+  flex: none;
+  height: 44px;
+  padding: 0 20px;
+  line-height: 44px;
+  text-align: center;
+  border-radius: 999px;
+  background: linear-gradient(120deg, var(--accent), var(--accent2));
+  font-weight: 600;
+  color: #05070a;
+  white-space: nowrap;
+  transition: translate 0.2s ease;
+}
+
+.box:hover .button {
+  translate: 0 -1px;
+}
+
+/* "(PDF)" only where the words beside the button are hidden. */
+.format {
+  display: none;
+}
+
+.status {
+  min-height: 1.4em;
+  font:
+    0.8rem var(--font-mono),
+    monospace;
+  color: var(--faint);
+}
+
+.status a {
+  color: var(--muted);
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 3px;
+}
+
+.status a:hover {
+  color: var(--text);
+}
+
+.status[data-state="error"] {
+  color: #ff7b72;
+}
+
+/* Phones: nothing to drop on, so the box is the button. */
+@media (max-width: 520px), (hover: none) and (pointer: coarse) {
+  .box {
+    padding: 6px;
+  }
+
+  .icon,
+  .text {
+    display: none;
+  }
+
+  .button {
+    flex: 1;
+  }
+
+  .format {
+    display: inline;
+  }
+}

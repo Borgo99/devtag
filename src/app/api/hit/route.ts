@@ -2,7 +2,7 @@ import { after } from "next/server";
 import { redditClickId } from "@/lib/reddit";
 import { ROOT_DOMAIN } from "@/lib/site";
 import { visitSource } from "@/lib/sources";
-import { recordSiteVisit } from "@/lib/store";
+import { forgetGuestDrafts, recordSiteVisit } from "@/lib/store";
 import { visitor } from "@/lib/visits";
 
 /**
@@ -17,6 +17,8 @@ export async function POST(request: Request) {
     const source = visitSource(ref, referrer, ROOT_DOMAIN);
     const click = redditClickId(clickId);
     after(() => recordSiteVisit(who, source, click, login === true).catch((error) => console.error("[hit]", error)));
+    // Each visit also deletes the pages of tries older than a day (api/cv/guest), so none outlives it for long.
+    after(() => forgetGuestDrafts().catch((error) => console.error("[hit]", error)));
   }
   return new Response(null, { status: 204 });
 }

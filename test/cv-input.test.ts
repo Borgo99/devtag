@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { randomBytes } from "node:crypto";
 import { existsSync } from "node:fs";
-import { checkCvText, MAX_CHARS } from "../src/lib/cv/input.ts";
+import { checkCvText, MAX_CHARS, readCvRequest } from "../src/lib/cv/input.ts";
 import { readPdf } from "./read-pdf.ts";
 
 const words = (n: number) => Array.from({ length: n }, (_, i) => `word${"abc"[i % 3]}`).join(" ");
@@ -54,4 +54,26 @@ test("text that isn't a CV is refused: a base64 blob, symbols, numbers", () => {
     const result = checkCvText(junk);
     assert.ok("error" in result && result.status === 400, `accepted: ${junk.slice(0, 30)}…`);
   }
+});
+
+test("the request: JSON only, its size capped before and after reading, then the text checked", async () => {
+  const post = (body: string, headers: Record<string, string> = { "content-type": "application/json" }) =>
+    readCvRequest(new Request("http://localhost/api/cv", { method: "POST", headers, body }));
+  const text = words(30);
+
+  assert.deepEqual(await post(JSON.stringify({ text }), { "content-type": "text/plain" }), {
+    error: "Send JSON.",
+    status: 415,
+  });
+  assert.deepEqual(await post("{text:", undefined), { error: "Invalid JSON.", status: 400 });
+  assert.deepEqual(await post("null"), { error: "No CV text received.", status: 400 });
+  const announced = await post(JSON.stringify({ text }), {
+    "content-type": "application/json",
+    "content-length": String(MAX_CHARS * 5),
+  });
+  assert.ok("error" in announced && announced.status === 413);
+  const big = await post(JSON.stringify({ text: "a".repeat(MAX_CHARS * 5) }));
+  assert.ok("error" in big && big.status === 413);
+  const ok = await post(JSON.stringify({ text }));
+  assert.ok("text" in ok && ok.text.startsWith("worda"));
 });

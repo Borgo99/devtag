@@ -3,13 +3,14 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import type { PortfolioConfig } from "@/lib/types";
 import { cleanConfig, publishProblems } from "@/lib/clean";
+import { filledSections } from "@/lib/review";
 import { isWebAddress } from "@/lib/text";
 import { LogoMark } from "@/components/site/LogoMark";
 import { CompaniesSection, type Matching } from "./CompaniesSection";
 import { CvImport } from "./CvImport";
 import { CvPanel } from "./CvPanel";
 import { Preview } from "./Preview";
-import { Sections, type SectionId } from "./Sections";
+import { Sections } from "./Sections";
 import { SharePanel } from "./SharePanel";
 import s from "./Editor.module.css";
 
@@ -30,6 +31,12 @@ interface Props {
   phone: string;
   savePhone: (phone: string) => Promise<boolean>;
   signOut: () => Promise<void>;
+  /** The page was just claimed with the one made from a CV on the landing. */
+  fromCv?: boolean;
+  /** A page made from a CV on the landing, before signing in, by someone who already had a page. */
+  pending?: PortfolioConfig;
+  /** Deletes `pending` once used or turned down. */
+  endPending: () => Promise<void>;
 }
 
 type SaveState = "saved" | "saving" | "error";
@@ -62,22 +69,6 @@ const hasContent = (c: PortfolioConfig) =>
     c.publications?.length,
   );
 
-/** Sections an import filled, to mark them "check". */
-function filledSections(c: PortfolioConfig): SectionId[] {
-  const filled: Record<SectionId, unknown> = {
-    profile: c.profile.name || c.profile.role || c.profile.about,
-    links: c.links?.length,
-    skills: c.topSkills?.length || c.skills.length,
-    stack: c.stack?.length,
-    languages: c.languages?.length,
-    experience: c.experience?.length,
-    projects: c.projects?.length,
-    education: c.education?.length,
-    publications: c.publications?.length,
-  };
-  return (Object.keys(filled) as SectionId[]).filter((id) => filled[id]);
-}
-
 /**
  * The admin panel: the form on the left, the live preview on the right. Every change is saved as a
  * draft after a short pause; Publish copies the draft to the public page.
@@ -95,6 +86,9 @@ export function Editor({
   phone: initialPhone,
   savePhone,
   signOut,
+  fromCv = false,
+  pending,
+  endPending,
 }: Props) {
   const [config, setConfig] = useState(draft);
   const [review, setReview] = useState(initialReview);
@@ -104,7 +98,9 @@ export function Editor({
   const [sharing, setSharing] = useState(false);
   const [makingPdf, setMakingPdf] = useState(false);
   const [phone, setPhone] = useState(initialPhone);
-  const [message, setMessage] = useState<string>();
+  const [message, setMessage] = useState(
+    fromCv ? 'Filled in from your CV. Check the sections marked "check", then publish.' : undefined,
+  );
   const [version, setVersion] = useState(0);
   const [view, setView] = useState<"edit" | "preview">("edit");
   // Wide screens: the preview can be hidden to give the form the whole width (narrow ones use the tabs).
@@ -209,6 +205,22 @@ export function Editor({
     window.addEventListener("beforeunload", warn);
     return () => window.removeEventListener("beforeunload", warn);
   }, [save]);
+
+  // Once: the note about the CV stays on screen, but not in the address (a reload shouldn't show it again).
+  const started = useRef(false);
+  useEffect(() => {
+    if (started.current) return;
+    started.current = true;
+    if (fromCv) window.history.replaceState(null, "", "/admin");
+    if (!pending) return;
+    if (
+      !hasContent(config) ||
+      confirm("Use the page made from the CV you just imported? It replaces your draft; your photo and colors stay.")
+    ) {
+      imported(pending, "your CV");
+    }
+    endPending();
+  });
 
   const update = (patch: Partial<PortfolioConfig>) => setConfig((c) => ({ ...c, ...patch }));
 

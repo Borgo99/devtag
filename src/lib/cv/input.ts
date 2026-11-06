@@ -16,7 +16,27 @@ const INVISIBLE = /[\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF]/g;
 /** Icon fonts (phone, mail, pin glyphs…) map their symbols to the Unicode private use areas. */
 const ICON_GLYPHS = /[\uE000-\uF8FF]|[\u{F0000}-\u{FFFFD}]|[\u{100000}-\u{10FFFD}]/gu;
 
-export type CvInput = { text: string } | { error: string; status: 400 | 413 };
+export type CvInput = { text: string } | { error: string; status: 400 | 413 | 415 };
+
+/** The JSON around the text, and up to 4 bytes per character. */
+const MAX_BYTES = MAX_CHARS * 4 + 1_000;
+
+/** The body of a CV import, { text }: read within a size limit, then checked. */
+export async function readCvRequest(request: Request): Promise<CvInput> {
+  if (!request.headers.get("content-type")?.startsWith("application/json")) return { error: "Send JSON.", status: 415 };
+  // Refuse big bodies before reading them, when the size is announced, and after reading otherwise.
+  if (Number(request.headers.get("content-length")) > MAX_BYTES) return { error: "This CV is too long.", status: 413 };
+
+  const body = await request.text();
+  if (body.length > MAX_BYTES) return { error: "This CV is too long.", status: 413 };
+  let input: unknown;
+  try {
+    input = JSON.parse(body);
+  } catch {
+    return { error: "Invalid JSON.", status: 400 };
+  }
+  return checkCvText((input as { text?: unknown } | null)?.text);
+}
 
 export function checkCvText(value: unknown): CvInput {
   if (typeof value !== "string") return { error: "No CV text received.", status: 400 };

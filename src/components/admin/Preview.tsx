@@ -7,10 +7,18 @@ const DESKTOP = 1280;
 const PHONE = 390;
 
 /**
- * The draft as visitors will see it (/admin/preview), reloaded after every save. Desktop is drawn
+ * The draft as visitors will see it (/admin/preview, or `src`), reloaded after every save. Desktop is drawn
  * at 1280px and scaled down to fit; phone at its real width.
  */
-export function Preview({ version, address }: { version: number; address: string }) {
+export function Preview({
+  version,
+  address,
+  src = "/admin/preview",
+}: {
+  version: number;
+  address: string;
+  src?: string;
+}) {
   const frame = useRef<HTMLIFrameElement>(null);
   const box = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
@@ -65,7 +73,7 @@ export function Preview({ version, address }: { version: number; address: string
         </div>
       </div>
       <div ref={box} className={s.box} data-mode={mode}>
-        {size.width > 0 && <iframe ref={frame} src="/admin/preview" title="Preview of your page" style={style} />}
+        {size.width > 0 && <iframe ref={frame} src={src} title="Preview of your page" style={style} />}
       </div>
     </div>
   );

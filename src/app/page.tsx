@@ -13,6 +13,7 @@ import { RevealObserver } from "@/components/profile/RevealObserver";
 import { BeforeAfter } from "@/components/landing/BeforeAfter";
 import { ClaimBox } from "@/components/landing/ClaimBox";
 import { DemoFrame } from "@/components/landing/DemoFrame";
+import { TryCv } from "@/components/landing/TryCv";
 import { HiringData } from "@/components/landing/HiringData";
 import { TypedNameProvider, YouAvatar } from "@/components/landing/YouAvatar";
 import { sample } from "@/components/landing/sample";
@@ -85,9 +86,9 @@ export default function Landing() {
         <span className={s.nowrap}>Drop your CV.</span> <span className={s.grad}>Get this page.</span>
       </h1>
       <p className={s.lead}>
-        Filled in from your PDF in two minutes and live at <strong>{you}</strong>.
+        See it filled in from your PDF before you sign up. Like it? Claim <strong>{you}</strong>.
       </p>
-      <ClaimBox domain={DISPLAY_DOMAIN} className={s.claim} />
+      <TryCv className={s.claim} />
       <p className={s.trust}>
         Free and{" "}
         <a href={REPO_URL} target="_blank" rel="noopener noreferrer">

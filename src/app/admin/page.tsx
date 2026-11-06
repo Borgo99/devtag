@@ -2,14 +2,20 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Editor } from "@/components/admin/Editor";
 import { cleanConfig } from "@/lib/clean";
+import { guestPage } from "@/lib/guest";
 import { currentAccount } from "@/lib/session";
 import { DISPLAY_DOMAIN, profileUrl } from "@/lib/site";
 import { visitStats } from "@/lib/store";
-import { saveMatchingAction, savePhoneAction, signOutAction } from "./actions";
+import { endGuestPageAction, saveMatchingAction, savePhoneAction, signOutAction } from "./actions";
 
 export const metadata: Metadata = { title: "Editor — devtag", robots: { index: false } };
 
-export default async function AdminPage() {
+interface Props {
+  /** `from=cv`: the page was just claimed with the one made from a CV on the landing. */
+  searchParams: Promise<{ from?: string }>;
+}
+
+export default async function AdminPage({ searchParams }: Props) {
   const account = await currentAccount();
   if (!account) redirect("/login");
   // Signed in, but no name claimed yet.
@@ -34,6 +40,10 @@ export default async function AdminPage() {
       saveMatching={saveMatchingAction}
       phone={profile.phone ?? ""}
       savePhone={savePhoneAction}
+      fromCv={(await searchParams).from === "cv"}
+      // Made from a CV on the landing by someone who already has a page: the editor asks before using it.
+      pending={await guestPage()}
+      endPending={endGuestPageAction}
       signOut={signOutAction}
     />
   );

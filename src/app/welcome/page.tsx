@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Background } from "@/components/profile/Background";
 import { sample } from "@/components/landing/sample";
+import { guestPage } from "@/lib/guest";
 import { currentAccount } from "@/lib/session";
 import { DISPLAY_DOMAIN } from "@/lib/site";
 import { claimAction } from "./actions";
@@ -23,6 +24,8 @@ export default async function WelcomePage({ searchParams }: Props) {
 
   const { username = "", error } = await searchParams;
   const firstName = account.user.name?.split(" ")[0];
+  // They made a page from their CV before signing in: it comes with the name.
+  const fromCv = Boolean(await guestPage());
 
   return (
     <>
@@ -62,6 +65,7 @@ export default async function WelcomePage({ searchParams }: Props) {
             <span className={s.domain}>.{DISPLAY_DOMAIN}</span>
           </div>
           <p className={error ? s.error : s.hint}>{error ?? "Lowercase letters, numbers and dashes."}</p>
+          {fromCv && <p className={s.carried}>✓ The page made from your CV comes with it.</p>}
 
           <button className={s.submit}>Claim it →</button>
         </form>

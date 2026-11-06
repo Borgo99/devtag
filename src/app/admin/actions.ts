@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { endGuestPage } from "@/lib/guest";
 import { currentUser, signOut } from "@/lib/session";
 import { PHONE } from "@/lib/cv/document";
 import { saveMatching, savePhone } from "@/lib/store";
@@ -34,4 +35,10 @@ export async function savePhoneAction(input: string) {
   const phone = typeof input === "string" ? input.replace(/\s+/g, " ").trim() : "";
   if (phone && !PHONE.test(phone)) return false;
   return Boolean(await savePhone(user.id, phone || undefined));
+}
+
+/** The editor used the page made from a CV on the landing, or the user turned it down: its copy is deleted. */
+export async function endGuestPageAction() {
+  const user = await currentUser();
+  if (user) await endGuestPage(user.id);
 }

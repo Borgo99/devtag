@@ -6,9 +6,23 @@ import s from "./ClaimBox.module.css";
 
 type Check = { state: "empty" } | { state: "checking" } | { state: "done"; available: boolean; error?: string };
 
+interface Props {
+  domain: string;
+  className?: string;
+  /** The name already in the box: /preview suggests one from the CV. */
+  initial?: string;
+  /** Under the box while it's empty. */
+  hint?: string;
+}
+
 /** "https:// [yourname] .devtag.io [Claim →]": checks the name as you type, then goes to sign-up. */
-export function ClaimBox({ domain, className = "" }: { domain: string; className?: string }) {
-  const [name, setName] = useState("");
+export function ClaimBox({
+  domain,
+  className = "",
+  initial = "",
+  hint = "Pick your address, then fill in the page.",
+}: Props) {
+  const [name, setName] = useState(initial);
   const [check, setCheck] = useState<Check>({ state: "empty" });
   const input = useRef<HTMLInputElement>(null);
   // On the landing, the profile picture at the top shows the initials of what's typed here.
@@ -71,7 +85,7 @@ export function ClaimBox({ domain, className = "" }: { domain: string; className
         data-state={check.state === "done" ? (available ? "ok" : "no") : check.state}
         aria-live="polite"
       >
-        {check.state === "empty" && "Pick your address, then fill in the page."}
+        {check.state === "empty" && hint}
         {check.state === "checking" && "checking…"}
         {check.state === "done" && (available ? `✓ ${name}.${domain} is free` : check.error)}
       </p>
