@@ -2,7 +2,8 @@
 
 import { redirect } from "next/navigation";
 import { currentUser, signOut } from "@/lib/session";
-import { saveMatching } from "@/lib/store";
+import { PHONE } from "@/lib/cv/document";
+import { saveMatching, savePhone } from "@/lib/store";
 
 export async function signOutAction() {
   await signOut();
@@ -24,4 +25,13 @@ export async function saveMatchingAction(input: { consent: boolean; location: st
           .slice(0, LOCATION_MAX)
       : "";
   return Boolean(await saveMatching(user.id, input?.consent === true, location || undefined));
+}
+
+/** The phone number for the CV as a PDF (editor's PDF panel). Empty removes it. False: not a phone number. */
+export async function savePhoneAction(input: string) {
+  const user = await currentUser();
+  if (!user) return false;
+  const phone = typeof input === "string" ? input.replace(/\s+/g, " ").trim() : "";
+  if (phone && !PHONE.test(phone)) return false;
+  return Boolean(await savePhone(user.id, phone || undefined));
 }

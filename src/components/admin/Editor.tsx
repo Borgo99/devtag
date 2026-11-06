@@ -7,6 +7,7 @@ import { isWebAddress } from "@/lib/text";
 import { LogoMark } from "@/components/site/LogoMark";
 import { CompaniesSection, type Matching } from "./CompaniesSection";
 import { CvImport } from "./CvImport";
+import { CvPanel } from "./CvPanel";
 import { Preview } from "./Preview";
 import { Sections, type SectionId } from "./Sections";
 import { SharePanel } from "./SharePanel";
@@ -25,6 +26,9 @@ interface Props {
   visits?: { total: number; week: number };
   matching: Matching;
   saveMatching: (matching: Matching) => Promise<boolean>;
+  /** Only for the CV as a PDF, never on the page. "" if none. */
+  phone: string;
+  savePhone: (phone: string) => Promise<boolean>;
   signOut: () => Promise<void>;
 }
 
@@ -88,6 +92,8 @@ export function Editor({
   visits,
   matching,
   saveMatching,
+  phone: initialPhone,
+  savePhone,
   signOut,
 }: Props) {
   const [config, setConfig] = useState(draft);
@@ -96,6 +102,8 @@ export function Editor({
   const [live, setLive] = useState({ upToDate, everPublished });
   const [publishing, setPublishing] = useState(false);
   const [sharing, setSharing] = useState(false);
+  const [makingPdf, setMakingPdf] = useState(false);
+  const [phone, setPhone] = useState(initialPhone);
   const [message, setMessage] = useState<string>();
   const [version, setVersion] = useState(0);
   const [view, setView] = useState<"edit" | "preview">("edit");
@@ -299,6 +307,9 @@ export function Editor({
               </button>
             ))}
           </div>
+          <button type="button" className={s.share} onClick={() => setMakingPdf(true)}>
+            PDF
+          </button>
           {live.everPublished && (
             <button type="button" className={s.share} onClick={() => setSharing(true)}>
               Share
@@ -351,6 +362,19 @@ export function Editor({
         )}
       </div>
       {sharing && <SharePanel address={address} pageUrl={pageUrl} onClose={() => setSharing(false)} />}
+      {makingPdf && (
+        <CvPanel
+          config={config}
+          pageUrl={live.everPublished && pageUrl.startsWith("http") ? pageUrl : undefined}
+          phone={phone}
+          savePhone={async (next) => {
+            const ok = await savePhone(next);
+            if (ok) setPhone(next);
+            return ok;
+          }}
+          onClose={() => setMakingPdf(false)}
+        />
+      )}
     </div>
   );
 }

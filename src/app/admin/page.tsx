@@ -5,7 +5,7 @@ import { cleanConfig } from "@/lib/clean";
 import { currentAccount } from "@/lib/session";
 import { DISPLAY_DOMAIN, profileUrl } from "@/lib/site";
 import { visitStats } from "@/lib/store";
-import { saveMatchingAction, signOutAction } from "./actions";
+import { saveMatchingAction, savePhoneAction, signOutAction } from "./actions";
 
 export const metadata: Metadata = { title: "Editor — devtag", robots: { index: false } };
 
@@ -32,6 +32,8 @@ export default async function AdminPage() {
       visits={profile.published ? await visitStats(profile.userId) : undefined}
       matching={{ consent: Boolean(profile.companiesConsentAt), location: profile.location ?? "" }}
       saveMatching={saveMatchingAction}
+      phone={profile.phone ?? ""}
+      savePhone={savePhoneAction}
       signOut={signOutAction}
     />
   );

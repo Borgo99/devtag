@@ -19,6 +19,9 @@ create table if not exists profiles (
 alter table profiles add column if not exists companies_consent_at timestamptz;
 alter table profiles add column if not exists location text;
 
+-- The phone number shown in the CV as a PDF (made in the editor), never on the page. Optional.
+alter table profiles add column if not exists phone text;
+
 -- One row per CV import, to cap them per account and for the whole site (each import costs an AI call).
 create table if not exists cv_imports (
   id         bigint generated always as identity primary key,

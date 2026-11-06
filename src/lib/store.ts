@@ -23,6 +23,8 @@ export interface Profile {
   companiesConsentAt?: string;
   /** Where the user lives, for matching with companies. Never shown on the page. */
   location?: string;
+  /** Only in the CV as a PDF (components/cv/CvPdf), never on the page. */
+  phone?: string;
 }
 
 interface Row {
@@ -35,6 +37,7 @@ interface Row {
   published_at: Date | null;
   companies_consent_at: Date | null;
   location: string | null;
+  phone: string | null;
 }
 
 const toProfile = (row: Row): Profile => ({
@@ -47,6 +50,7 @@ const toProfile = (row: Row): Profile => ({
   publishedAt: row.published_at?.toISOString(),
   companiesConsentAt: row.companies_consent_at?.toISOString(),
   location: row.location ?? undefined,
+  phone: row.phone ?? undefined,
 });
 
 async function one(sql: string, params: unknown[]) {
@@ -97,6 +101,10 @@ export const saveMatching = (userId: string, consent: boolean, location: string 
      where user_id = $1 returning *`,
     [userId, consent, location ?? null],
   );
+
+/** The phone number for the CV as a PDF; undefined removes it. */
+export const savePhone = (userId: string, phone: string | undefined) =>
+  one("update profiles set phone = $2 where user_id = $1 returning *", [userId, phone ?? null]);
 
 // CV imports
 

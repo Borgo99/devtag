@@ -5,7 +5,8 @@ function parse(value: string) {
   return { year, month: month || 1, hasMonth: Boolean(month) };
 }
 
-function label(value: string) {
+/** "2023-04" → "Apr 2023", "2023" → "2023". */
+export function dateLabel(value: string) {
   const d = parse(value);
   if (!d.hasMonth) return String(d.year);
   return new Date(d.year, d.month - 1).toLocaleString("en", { month: "short", year: "numeric" });
@@ -26,7 +27,7 @@ function duration(start: string, end?: string) {
 export function period(start?: string, end?: string) {
   if (!start) return { range: "", duration: "" };
   return {
-    range: `${label(start)} — ${end ? label(end) : "Present"}`,
+    range: `${dateLabel(start)} — ${end ? dateLabel(end) : "Present"}`,
     duration: duration(start, end),
   };
 }
