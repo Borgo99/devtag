@@ -193,14 +193,17 @@
   animation: fade 0.9s ease both;
 }
 
-/* Keeps the words readable over the code scrolling in the background. */
-.splitCopy::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  inset: -60px -80px;
-  background: radial-gradient(farthest-side, rgba(5, 7, 10, 0.88) 55%, transparent);
-  pointer-events: none;
+/* Keeps the words readable over the code scrolling in the background. Wide screens only: on phones the
+   words span the screen, and the backdrop would stick out of it and make the page scroll sideways. */
+@media (min-width: 861px) {
+  .splitCopy::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: -60px -80px;
+    background: radial-gradient(farthest-side, rgba(5, 7, 10, 0.88) 55%, transparent);
+    pointer-events: none;
+  }
 }
 
 .splitCopy .tagline {
