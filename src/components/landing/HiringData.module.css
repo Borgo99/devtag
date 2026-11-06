@@ -4,7 +4,7 @@
   gap: 16px;
 }
 
-/* The chart, in a terminal window like the rest of the page */
+/* The three figures, in a terminal window like the rest of the page */
 
 .window {
   grid-row: span 2;
@@ -53,125 +53,30 @@
   color: var(--muted);
 }
 
-.chart {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 4px 0 8px;
+.stats {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-.caption {
-  padding: 18px 22px 14px;
-  text-align: left;
+/* The figure on the left, what it means and its source on the right. */
+.stat {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 9.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: 20px;
+  padding: 22px 24px;
 }
 
-.title,
-.subtitle {
-  display: block;
-}
-
-.title {
-  font-size: 1.05rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--text);
-}
-
-.subtitle {
-  margin-top: 2px;
-  font-size: 0.85rem;
-  color: var(--faint);
-}
-
-.row th,
-.row td {
-  padding-top: 9px;
-  padding-bottom: 9px;
-}
-
-.label {
-  width: 40%;
-  padding-left: 22px;
-  padding-right: 16px;
-  font-size: 0.88rem;
-  font-weight: 400;
-  line-height: 1.35;
-  text-align: left;
-  color: var(--muted);
-  transition: color 0.2s ease;
-}
-
-.cell {
-  padding-right: 22px;
-}
-
-/* The bar grows from the baseline on the left; the value sits at its tip. Room is kept for the
-   longest value, so a full bar never pushes its label off the card. */
-.track {
-  --gray: #6b7685;
-  position: relative;
-  display: block;
-  height: 22px;
-  margin-right: 52px;
-}
-
-.mark {
-  position: absolute;
-  top: 5px;
-  left: 0;
-  width: var(--v);
-  height: 12px;
-  border-radius: 0 4px 4px 0;
-  background: var(--gray);
-  transform-origin: left center;
-  transition:
-    scale 1s var(--ease-out) calc(var(--i) * 90ms + 150ms),
-    filter 0.2s ease;
-}
-
-.value {
-  position: absolute;
-  top: 0;
-  left: calc(var(--v) + 10px);
-  font:
-    500 0.85rem/22px var(--font-sans),
-    sans-serif;
-  white-space: nowrap;
-  color: var(--muted);
-  transition: opacity 0.6s ease calc(var(--i) * 90ms + 700ms);
-}
-
-.row[data-highlight] .label,
-.row[data-highlight] .value {
-  font-weight: 600;
-  color: var(--text);
-}
-
-.row[data-highlight] .mark {
-  background: var(--accent);
-  box-shadow: 0 0 18px -2px color-mix(in srgb, var(--accent) 60%, transparent);
-}
-
-.row:hover .label {
-  color: var(--text);
-}
-
-.row:hover .mark {
-  filter: brightness(1.2);
-}
-
-/* Bars grow in when the chart scrolls into view (see RevealObserver). */
-:global(.reveal[data-pending]) .mark {
-  scale: 0 1;
-}
-
-:global(.reveal[data-pending]) .value {
-  opacity: 0;
-}
-
-.foot {
-  margin-top: auto;
-  padding: 12px 22px 16px;
+.stat + .stat {
   border-top: 1px solid var(--border);
+}
+
+.statBody {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 /* The two figures */
@@ -245,18 +150,9 @@
 }
 
 @media (max-width: 480px) {
-  .label {
-    width: 46%;
-    padding-left: 16px;
-    padding-right: 10px;
-    font-size: 0.8rem;
-  }
-
-  .cell {
-    padding-right: 16px;
-  }
-
-  .caption {
-    padding: 16px 16px 12px;
+  .stat {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    padding: 20px;
   }
 }

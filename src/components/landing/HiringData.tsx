@@ -2,21 +2,43 @@ import type { CSSProperties } from "react";
 import s from "./HiringData.module.css";
 
 /**
- * "Why a page": survey data on what hiring managers look for. Every figure was checked against its
- * primary source (October 2026); keep the wording close to the source and the links in place.
+ * "Why a page": what hiring managers look for, and how fast they look. Every figure was checked against its
+ * primary source (October and November 2026); keep the wording close to the source and the links in place.
  */
 
 const HACKERRANK = "https://www.hackerrank.com/research/developer-skills/2018/";
 const HARRIS =
   "https://web.archive.org/web/20241011123946/https://www.expresspros.com/Newsroom/America-Employed/Social-Media-Integral-to-Recruiting-as-Most-Businesses-Use-It-to-Source-and-Research-and-Screen-Candidates.aspx";
 
-/** HackerRank Developer Skills Report 2018, "qualifications employers look for", all company sizes. */
-const LOOK_FOR = [
-  { label: "Experience", value: 90.6 },
-  { label: "Portfolio (e.g. GitHub)", value: 72.7, highlight: true },
-  { label: "Education", value: 41.7 },
-  { label: "Training (e.g. bootcamps)", value: 23.7 },
-  { label: "Personal brand (e.g. skills & endorsements)", value: 8.2 },
+const LADDERS =
+  "https://www.prnewswire.com/news-releases/ladders-updates-popular-recruiter-eye-tracking-study-with-new-key-insights-on-how-job-seekers-can-improve-their-resumes-300744217.html";
+const RESUME_TEMPLATES =
+  "https://www.resumetemplates.com/3-in-4-hiring-managers-pass-on-qualified-candidates-with-bad-resumes/";
+
+/**
+ * The big window. HackerRank 2018, "qualifications employers look for", all company sizes: portfolio 72.7%,
+ * education 41.7%. Ladders 2018: average initial screening time and what the best and worst resumes looked
+ * like. ResumeTemplates, January 2024, 781 US respondents involved in hiring: "always (9%) or often (27%)".
+ */
+const STATS = [
+  {
+    figure: "72.7%",
+    text: "of hiring managers look for a portfolio (e.g. GitHub) in a candidate, far more than for education (41.7%).",
+    href: HACKERRANK,
+    source: "HackerRank Developer Skills Report, 2018",
+  },
+  {
+    figure: "7.4s",
+    text: "is how long a recruiter's first look at a resume lasts. Simple layouts with clear headers held their attention; cluttered ones didn't.",
+    href: LADDERS,
+    source: "Ladders eye-tracking study, 2018",
+  },
+  {
+    figure: "36%",
+    text: "of hiring managers often or always pass on a candidate when they can't quickly find key information on the resume.",
+    href: RESUME_TEMPLATES,
+    source: "ResumeTemplates survey of 781 US hiring managers, 2024",
+  },
 ];
 
 function Source({ href, children }: { href: string; children: string }) {
@@ -31,7 +53,7 @@ export function HiringData() {
   return (
     <>
       <div className={s.grid}>
-        <figure className={`${s.window} reveal`}>
+        <div className={`${s.window} reveal`}>
           <div className={s.bar} aria-hidden>
             <span className={s.dots}>
               <i />
@@ -41,38 +63,18 @@ export function HiringData() {
             <span className={s.file}>hiring-managers.csv</span>
           </div>
 
-          {/* A real table: screen readers get the data, the bars are drawn inside its cells. */}
-          <table className={s.chart}>
-            <caption className={s.caption}>
-              <span className={s.title}>What hiring managers look for</span>
-              <span className={s.subtitle}>Share who look for each qualification in a candidate</span>
-            </caption>
-            <tbody>
-              {LOOK_FOR.map((row, i) => (
-                <tr
-                  key={row.label}
-                  className={s.row}
-                  data-highlight={row.highlight || undefined}
-                  style={{ "--i": i } as CSSProperties}
-                >
-                  <th scope="row" className={s.label}>
-                    {row.label}
-                  </th>
-                  <td className={s.cell}>
-                    <span className={s.track} style={{ "--v": `${row.value}%` } as CSSProperties}>
-                      <span className={s.mark} />
-                      <span className={s.value}>{row.value}%</span>
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <figcaption className={s.foot}>
-            <Source href={HACKERRANK}>HackerRank Developer Skills Report, 2018</Source>
-          </figcaption>
-        </figure>
+          <ul className={s.stats}>
+            {STATS.map((stat) => (
+              <li key={stat.figure} className={s.stat}>
+                <p className={s.figure}>{stat.figure}</p>
+                <div className={s.statBody}>
+                  <p className={s.text}>{stat.text}</p>
+                  <Source href={stat.href}>{stat.source}</Source>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
 
         <div className={`${s.tile} reveal`} style={{ "--delay": "80ms" } as CSSProperties}>
           <p className={s.figure}>84.1%</p>
