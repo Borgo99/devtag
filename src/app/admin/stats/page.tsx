@@ -38,7 +38,7 @@ export default async function StatsPage() {
       <h2>By week</h2>
       <p>
         Visitors of the landing and login pages, each once a day; sign-in page: those who opened the login page
-        (counted since 6 November 2026), with their share of visitors, as accounts. Pages are grouped by the week
+        (counted since 7 November 2026), with their share of visitors, as accounts. Pages are grouped by the week
         they were claimed; each step after that counts those pages, with its share of the step before (visited: of
         published).
       </p>
