@@ -11,7 +11,7 @@ export interface Week {
   visitors: number;
   /** CV imports without an account (the landing's), cancelled ones included. */
   tried: number;
-  /** Visitors who opened the login page (counted since 2026-11-06). */
+  /** Visitors who opened the login page (counted since 2026-11-07). */
   login: number;
   /** Accounts created: signed in for the first time. */
   accounts: number;

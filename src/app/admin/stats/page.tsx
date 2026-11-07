@@ -38,7 +38,7 @@ export default async function StatsPage() {
       <h2>By week</h2>
       <p>
         Visitors of the landing and login pages, each once a day. Tried: CV imports on the landing, without an account.
-        Sign-in page: visitors who opened the login page (counted since 6 November 2026). These and accounts show their
+        Sign-in page: visitors who opened the login page (counted since 7 November 2026). These and accounts show their
         share of visitors. Pages are grouped by the week they were claimed; each step after that counts those pages,
         with its share of the step before (visited: of published). Imported includes pages claimed with the one made on
         the landing.
