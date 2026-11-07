@@ -2,9 +2,12 @@ import { defineConfig } from "@/lib/types";
 
 // The demo profile shown on the landing page (devtag.io/demo). Nora is made up: the companies are the
 // fictional ones from Microsoft's sample code (Contoso, Northwind, Fabrikam), the email is on the reserved
-// example.com domain, and the GitHub links point to the devtag-demo account, never to a real person.
+// example.com domain, and the GitHub links point to the devtag-demo account, never to a real person. Her picture
+// and the projects' screenshots are made up too (public/static/demo/README.md).
 
 const GITHUB = "https://github.com/devtag-demo";
+/** In public/static, the same address on every host: demo.devtag.io too (proxy.ts). */
+const IMAGES = "/static/demo";
 
 export default defineConfig({
   profile: {
@@ -12,6 +15,8 @@ export default defineConfig({
     role: "Full-Stack Developer",
     seniority: "mid",
     years: 4,
+    // A JPEG: link previews read only JPEG and PNG (lib/og.tsx).
+    image: `${IMAGES}/nora.jpg`,
     about: `I'm a full-stack developer who builds fast, accessible web apps with TypeScript, React and Node.js. Before code I spent four years as an architect, so I care about how things are structured and how people move through them.
 
 I switched careers through a coding bootcamp in 2022 and have shipped production features ever since: from a booking flow used by 40,000 patients a month to the dashboard a logistics team plans its routes with.`,
@@ -95,6 +100,7 @@ I switched careers through a coding bootcamp in 2022 and have shipped production
       description: "Turns a 2D floor plan into a 3D model you can walk through in the browser.",
       year: 2024,
       repo: `${GITHUB}/floorplan-3d`,
+      image: `${IMAGES}/floorplan-3d.webp`,
       stack: ["Three.js", "TypeScript", "React"],
       highlights: [
         "Detects walls, doors and windows from an uploaded image.",
@@ -107,6 +113,7 @@ I switched careers through a coding bootcamp in 2022 and have shipped production
       description: "Reading tracker: scan a book's barcode, log your pages, see your year in books.",
       year: 2023,
       repo: `${GITHUB}/shelfie`,
+      image: `${IMAGES}/shelfie.webp`,
       stack: ["Next.js", "PostgreSQL", "Tailwind CSS"],
       highlights: ["Installable on phones as a web app, and works offline."],
       portfolio: true,
@@ -116,6 +123,7 @@ I switched careers through a coding bootcamp in 2022 and have shipped production
       description: "Command-line tool that saves and restores local PostgreSQL databases in one command.",
       year: 2024,
       repo: `${GITHUB}/pg-snapshot`,
+      image: `${IMAGES}/pg-snapshot.webp`,
       stack: ["Node.js", "PostgreSQL", "Docker"],
       portfolio: true,
     },
@@ -124,6 +132,7 @@ I switched careers through a coding bootcamp in 2022 and have shipped production
       description: "Restaurant booking app, built in two weeks with a team of four as the bootcamp's final project.",
       year: 2022,
       stack: ["React", "Express", "MongoDB"],
+      image: `${IMAGES}/tablemate.webp`,
       highlights: ["Presented live on demo day to a panel of local tech companies."],
       portfolio: true,
     },
@@ -132,6 +141,7 @@ I switched careers through a coding bootcamp in 2022 and have shipped production
       description: "Map of how long it takes to reach Milan's center by public transport, from every street.",
       year: 2023,
       repo: `${GITHUB}/commute-heatmap`,
+      image: `${IMAGES}/commute-heatmap.webp`,
       stack: ["Python", "pandas", "Mapbox"],
       portfolio: true,
     },
