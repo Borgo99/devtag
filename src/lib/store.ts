@@ -1,6 +1,7 @@
 import { randomBytes, randomUUID } from "node:crypto";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { pool } from "./db";
+import type { PageFacts } from "./report";
 import type { PortfolioConfig } from "./types";
 
 /**
@@ -113,6 +114,28 @@ export const saveMatching = (userId: string, consent: boolean, location: string 
 /** The phone number for the CV as a PDF; undefined removes it. */
 export const savePhone = (userId: string, phone: string | undefined) =>
   one("update profiles set phone = $2 where user_id = $1 returning *", [userId, phone ?? null]);
+
+// The report (admin/report)
+
+/** The parts of a page the report reads (lib/report.ts Facts), not its projects or photos. */
+const facts = (column: "draft" | "published") =>
+  `jsonb_strip_nulls(jsonb_build_object('profile', ${column}->'profile', 'openToWork', ${column}->'openToWork',
+     'topSkills', ${column}->'topSkills', 'skills', ${column}->'skills'))`;
+
+/**
+ * Every page, oldest first, with its choices for companies. Where they live is read only while they agree: they
+ * gave it to be matched with companies, and for nothing else.
+ */
+export async function reportPages() {
+  const { rows } = await pool.query<PageFacts>(
+    `select ${facts("draft")} as draft,
+       case when published is not null then ${facts("published")} end as published,
+       companies_consent_at is not null as agreed,
+       case when companies_consent_at is not null then nullif(trim(location), '') end as location
+     from profiles order by created_at`,
+  );
+  return rows;
+}
 
 // CV imports
 

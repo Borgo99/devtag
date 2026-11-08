@@ -1,17 +1,10 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { TextPage } from "@/components/site/TextPage";
 import { shares, sources, totalAccounts, weeks } from "@/lib/funnel";
-import { currentUser } from "@/lib/session";
+import { requireTeam } from "@/lib/session";
 import s from "./stats.module.css";
 
 export const metadata: Metadata = { title: "Stats — devtag", robots: { index: false } };
-
-/** Who may see the stats: the verified emails in STATS_EMAILS, comma-separated. */
-const ALLOWED = (process.env.STATS_EMAILS ?? "")
-  .split(",")
-  .map((email) => email.trim().toLowerCase())
-  .filter(Boolean);
 
 /** "12 · 40%": a count and its share of the step it comes from. */
 function Step({ n, of }: { n: number; of: number }) {
@@ -25,8 +18,7 @@ function Step({ n, of }: { n: number; of: number }) {
 
 /** The funnel, for devtag's own team: anyone else gets a 404. */
 export default async function StatsPage() {
-  const user = await currentUser();
-  if (!user?.emailVerified || !ALLOWED.includes(user.email.toLowerCase())) notFound();
+  await requireTeam();
 
   const [accounts, byWeek, bySource, byPlace] = await Promise.all([totalAccounts(), weeks(), sources(), shares()]);
 
