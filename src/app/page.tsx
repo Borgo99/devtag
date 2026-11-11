@@ -83,7 +83,7 @@ export default function Landing() {
         <span className={hero.caret} aria-hidden />
       </p>
       <h1 className={s.title}>
-        <span className={s.nowrap}>Drop your CV.</span> <span className={s.grad}>Get this page.</span>
+        <span className={s.nowrap}>Drop your CV.</span> <span className={s.grad}>Get a cool website.</span>
       </h1>
       <p className={s.lead}>
         See it filled in from your PDF before you sign up. Like it? Claim <strong>{you}</strong>.
@@ -171,7 +171,7 @@ export default function Landing() {
             </section>
           )}
 
-          <Section id="how" index={1} command="devtag import cv.pdf" title="From PDF to page in two minutes">
+          <Section id="how" index={1} command="devtag import cv.pdf" title="From PDF to page in one minute">
             <ol className={s.steps}>
               <li className={`${s.step} reveal`}>
                 <div className={`${s.visual} ${s.dropVisual}`} aria-hidden>

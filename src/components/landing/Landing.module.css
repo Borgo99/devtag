@@ -101,7 +101,7 @@
   white-space: nowrap;
 }
 
-/* "Get this page.": the ads' green-to-blue. */
+/* "Get a cool website.": the ads' green-to-blue. */
 .grad {
   white-space: nowrap;
   background: linear-gradient(90deg, var(--accent), var(--accent2));
