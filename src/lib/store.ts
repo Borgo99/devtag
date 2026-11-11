@@ -95,6 +95,13 @@ export const publish = (userId: string, published: PortfolioConfig) =>
     [userId, published],
   );
 
+/**
+ * Takes the page offline: its address shows "not found" until the next publish. The draft and the name stay, and
+ * so does first_published_at, so the funnel still counts the page as published once.
+ */
+export const unpublish = (userId: string) =>
+  one("update profiles set published = null where user_id = $1 returning *", [userId]);
+
 /** Where the editor's share dialog can send a page. */
 export const SHARE_PLACES = ["linkedin", "post", "github", "elsewhere"] as const;
 

@@ -22,7 +22,8 @@ interface Props {
   review: string[];
   /** The live page exists and matches the draft. */
   upToDate: boolean;
-  everPublished: boolean;
+  /** The page is live: published, and not taken offline since. */
+  online: boolean;
   /** Visitors of the live page: all time, and in the last 7 days. */
   visits?: { total: number; week: number };
   matching: Matching;
@@ -79,7 +80,7 @@ export function Editor({
   draft,
   review: initialReview,
   upToDate,
-  everPublished,
+  online,
   visits,
   matching,
   saveMatching,
@@ -93,8 +94,10 @@ export function Editor({
   const [config, setConfig] = useState(draft);
   const [review, setReview] = useState(initialReview);
   const [save, setSave] = useState<SaveState>("saved");
-  const [live, setLive] = useState({ upToDate, everPublished });
+  const [live, setLive] = useState({ upToDate, online });
   const [publishing, setPublishing] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menu = useRef<HTMLDivElement>(null);
   const [sharing, setSharing] = useState(false);
   const [makingPdf, setMakingPdf] = useState(false);
   const [phone, setPhone] = useState(initialPhone);
@@ -222,6 +225,24 @@ export function Editor({
     endPending();
   });
 
+  // The "⋯" menu closes on Escape (focus goes back to its button) or on a click anywhere else.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const close = (e: KeyboardEvent | globalThis.PointerEvent) => {
+      if (e instanceof KeyboardEvent) {
+        if (e.key !== "Escape") return;
+        menu.current?.querySelector("button")?.focus();
+      } else if (menu.current?.contains(e.target as Node)) return;
+      setMenuOpen(false);
+    };
+    document.addEventListener("keydown", close);
+    document.addEventListener("pointerdown", close);
+    return () => {
+      document.removeEventListener("keydown", close);
+      document.removeEventListener("pointerdown", close);
+    };
+  }, [menuOpen]);
+
   const update = (patch: Partial<PortfolioConfig>) => setConfig((c) => ({ ...c, ...patch }));
 
   const problems = publishProblems(cleanConfig(config, { complete: true }));
@@ -234,14 +255,28 @@ export function Editor({
       const res = await fetch("/api/profile/publish", { method: "POST" });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error ?? "Publishing failed. Try again.");
-      setLive({ upToDate: true, everPublished: true });
-      // The first time the page goes live is when it's worth sharing.
-      if (!live.everPublished) setSharing(true);
+      setLive({ upToDate: true, online: true });
+      // Going live is when the page is worth sharing.
+      if (!live.online) setSharing(true);
     } catch (e) {
       setMessage((e as Error).message);
     } finally {
       setPublishing(false);
     }
+  }
+
+  async function unpublish() {
+    setMenuOpen(false);
+    if (
+      !confirm(
+        `Take ${address} offline? Visitors will see "page not found". Your draft and your address stay yours: publish again whenever you want.`,
+      )
+    )
+      return;
+    setMessage(undefined);
+    const res = await fetch("/api/profile/publish", { method: "DELETE" }).catch(() => undefined);
+    if (!res?.ok) return setMessage("Your page couldn't be taken offline. Try again.");
+    setLive({ upToDate: false, online: false });
   }
 
   function imported(next: PortfolioConfig, file: string) {
@@ -266,7 +301,7 @@ export function Editor({
   const status = {
     saving: "Saving…",
     error: "Not saved: check your connection",
-    saved: live.upToDate ? "Published" : live.everPublished ? "Unpublished changes" : "Draft saved: not published yet",
+    saved: live.upToDate ? "Published" : live.online ? "Unpublished changes" : "Draft saved: not published yet",
   }[save];
 
   return (
@@ -278,14 +313,14 @@ export function Editor({
         </a>
         <a
           className={s.address}
-          href={live.everPublished ? pageUrl : undefined}
+          href={live.online ? pageUrl : undefined}
           target="_blank"
           rel="noopener noreferrer"
-          aria-disabled={!live.everPublished || undefined}
-          title={live.everPublished ? "Open your live page" : "Publish to put your page online"}
+          aria-disabled={!live.online || undefined}
+          title={live.online ? "Open your live page" : "Publish to put your page online"}
         >
           {address}
-          {live.everPublished && <span aria-hidden> ↗</span>}
+          {live.online && <span aria-hidden> ↗</span>}
         </a>
         <span className={s.status} data-state={save === "saved" && live.upToDate ? "live" : save}>
           {status}
@@ -322,7 +357,7 @@ export function Editor({
           <button type="button" className={s.share} onClick={() => setMakingPdf(true)}>
             PDF
           </button>
-          {live.everPublished && (
+          {live.online && (
             <button type="button" className={s.share} onClick={() => setSharing(true)}>
               Share
             </button>
@@ -336,9 +371,33 @@ export function Editor({
           >
             {publishing ? "Publishing…" : "Publish"}
           </button>
-          <form action={signOut}>
-            <button className={s.signOut}>Sign out</button>
-          </form>
+          <div ref={menu} className={s.more}>
+            <button
+              type="button"
+              className={s.moreButton}
+              aria-label="More"
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((open) => !open)}
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                <circle cx="5" cy="12" r="1.8" />
+                <circle cx="12" cy="12" r="1.8" />
+                <circle cx="19" cy="12" r="1.8" />
+              </svg>
+            </button>
+            {menuOpen && (
+              <div className={s.menu}>
+                {live.online && (
+                  <button type="button" onClick={unpublish}>
+                    Take page offline
+                  </button>
+                )}
+                <form action={signOut}>
+                  <button>Sign out</button>
+                </form>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
@@ -353,6 +412,11 @@ export function Editor({
         <div ref={form} className={s.form}>
           {(message || problems.length > 0) && (
             <p className={s.message}>{message ?? `${problems.join(" ")} Then you can publish.`}</p>
+          )}
+          {!live.online && (
+            <p className={s.note}>
+              Nothing is public until you publish, and you can take your page offline anytime from the ⋯ menu.
+            </p>
           )}
           <CvImport replaces={hasContent(config)} onImport={imported} />
           <Sections
@@ -377,7 +441,7 @@ export function Editor({
       {makingPdf && (
         <CvPanel
           config={config}
-          pageUrl={live.everPublished && pageUrl.startsWith("http") ? pageUrl : undefined}
+          pageUrl={live.online && pageUrl.startsWith("http") ? pageUrl : undefined}
           phone={phone}
           savePhone={async (next) => {
             const ok = await savePhone(next);

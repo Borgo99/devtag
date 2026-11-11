@@ -34,7 +34,7 @@ export default async function AdminPage({ searchParams }: Props) {
       draft={profile.draft}
       review={profile.review}
       upToDate={upToDate}
-      everPublished={Boolean(profile.published)}
+      online={Boolean(profile.published)}
       visits={profile.published ? await visitStats(profile.userId) : undefined}
       matching={{ consent: Boolean(profile.companiesConsentAt), location: profile.location ?? "" }}
       saveMatching={saveMatchingAction}
