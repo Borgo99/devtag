@@ -91,10 +91,17 @@ export async function sources(days = 30) {
   return rows;
 }
 
-/** Accounts ever created: everyone who has signed in at least once. */
-export async function totalAccounts() {
-  const { rows } = await pool.query<{ n: number }>(`select count(*)::int as n from "user"`);
-  return rows[0].n;
+/**
+ * All-time totals. Accounts: everyone who has signed in at least once. Pages: names claimed. Published: pages
+ * that are live now.
+ */
+export async function totals() {
+  const { rows } = await pool.query<{ accounts: number; pages: number; published: number }>(
+    `select (select count(*) from "user")::int as accounts, count(*)::int as pages,
+       count(*) filter (where published is not null)::int as published
+     from profiles`,
+  );
+  return rows[0];
 }
 
 /** Clicks in the share dialog in the last `days` days, by place. */

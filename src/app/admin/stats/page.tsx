@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { TextPage } from "@/components/site/TextPage";
-import { shares, sources, totalAccounts, weeks } from "@/lib/funnel";
+import { shares, sources, totals, weeks } from "@/lib/funnel";
 import { requireTeam } from "@/lib/session";
 import s from "./stats.module.css";
 
@@ -20,12 +20,14 @@ function Step({ n, of }: { n: number; of: number }) {
 export default async function StatsPage() {
   await requireTeam();
 
-  const [accounts, byWeek, bySource, byPlace] = await Promise.all([totalAccounts(), weeks(), sources(), shares()]);
+  const [total, byWeek, bySource, byPlace] = await Promise.all([totals(), weeks(), sources(), shares()]);
 
   return (
     <TextPage command="devtag stats" title="Funnel">
       <p className={s.total}>
-        <strong>{accounts}</strong> accounts in total
+        <strong>{total.accounts}</strong> accounts, <strong>{total.pages}</strong> pages,{" "}
+        <strong>{total.published}</strong> published
+        {total.pages > 0 && ` (${Math.round((total.published / total.pages) * 100)}% of pages)`}
       </p>
       <h2>By week</h2>
       <p>
