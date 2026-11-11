@@ -16,6 +16,8 @@ interface Props {
   /** Known once the PDF is read. */
   pdf?: PdfStats;
   onCancel: () => void;
+  /** On the landing, without an account: the page opens next, there's nothing to check yet. */
+  guest?: boolean;
 }
 
 /** What the AI works on, shown in turn while it does. A description, not a progress report. */
@@ -35,7 +37,7 @@ const plural = (n: number, word: string) => `${n.toLocaleString("en")} ${word}${
  * builds itself. The log below it only states facts (what was read, seconds elapsed); there is no
  * made-up percentage. Cancel or Esc stops the import.
  */
-export function ImportOverlay({ file, stage, pdf, onCancel }: Props) {
+export function ImportOverlay({ file, stage, pdf, onCancel, guest = false }: Props) {
   const cancel = useRef<HTMLButtonElement>(null);
   const [seconds, setSeconds] = useState(0);
 
@@ -149,12 +151,20 @@ export function ImportOverlay({ file, stage, pdf, onCancel }: Props) {
               <span className={s.time}>{seconds}s</span>
             </p>
           )}
-          {stage === "done" && <p className={s.ok}>✓ your page is filled in: check it, then publish</p>}
+          {stage === "done" && (
+            <p className={s.ok}>
+              {guest ? "✓ your page is made: opening it" : "✓ your page is filled in: check it, then publish"}
+            </p>
+          )}
         </div>
 
         <div className={s.foot}>
           <span className={s.note}>
-            {stage === "done" ? 'Sections filled from your CV are marked "check".' : "Long CVs take a little longer."}
+            {stage !== "done"
+              ? "Long CVs take a little longer."
+              : guest
+                ? "Like it? Claim it next, for free."
+                : 'Sections filled from your CV are marked "check".'}
           </span>
           <button ref={cancel} type="button" className={s.cancel} onClick={onCancel} disabled={stage === "done"}>
             Cancel

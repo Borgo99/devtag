@@ -141,6 +141,15 @@
   color: #ff7b72;
 }
 
+/* Welcome: the page made from the CV before signing in is kept. */
+.carried {
+  margin-top: 14px;
+  font:
+    0.85rem var(--font-mono),
+    monospace;
+  color: var(--accent);
+}
+
 .submit {
   height: 46px;
   margin-top: 20px;

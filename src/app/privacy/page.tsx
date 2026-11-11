@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { TextPage } from "@/components/site/TextPage";
-import { CV_IMPORTS_PER_USER } from "@/lib/store";
+import { CV_IMPORTS_PER_USER, GUEST_IMPORTS_PER_VISITOR } from "@/lib/store";
 import { COMPANY } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -14,7 +14,7 @@ export default function PrivacyPage() {
 
   return (
     <TextPage command="cat privacy.md" title="Privacy policy">
-      <p>Effective date: 2 November 2026</p>
+      <p>Effective date: 6 November 2026</p>
       <p>
         devtag (devtag.io) is run by <strong>{COMPANY.name}</strong>, {COMPANY.address}, the data controller. This
         policy explains which personal data we process, why, for how long, and who helps us. Words like &ldquo;personal
@@ -47,6 +47,13 @@ export default function PrivacyPage() {
           (your account and the time) to apply the limit of {CV_IMPORTS_PER_USER} imports a day.
         </li>
         <li>
+          <strong>Trying it without an account:</strong> if you drop your CV on our home page before signing in, it is
+          read the same way, and we keep the page made from it for a day, found by a random code in a cookie, so you can
+          see it and claim it. If you claim it, it becomes your page; if not, it&apos;s deleted. To apply the limit of{" "}
+          {GUEST_IMPORTS_PER_VISITOR} tries a day, we record each try with that day&apos;s hash of your IP address and
+          browser, as for visits.
+        </li>
+        <li>
           <strong>Your choices for companies:</strong> whether and when you agreed that we share your page with
           companies and, if you add it, where you live. They are private: they&apos;re not on your page.
         </li>
@@ -74,8 +81,9 @@ export default function PrivacyPage() {
 
       <h2>2. Cookies</h2>
       <p>
-        We use one cookie to keep you signed in, plus short-lived ones while you sign in. They are strictly necessary,
-        so we don&apos;t ask for consent. There are no analytics or advertising cookies.
+        We use one cookie to keep you signed in, plus short-lived ones while you sign in, and, if you try devtag without
+        an account, one for a day that finds the page made from your CV. They are strictly necessary, so we don&apos;t
+        ask for consent. There are no analytics or advertising cookies.
       </p>
 
       <h2>3. Why, and on what legal basis</h2>
@@ -84,7 +92,8 @@ export default function PrivacyPage() {
           <strong>Running your account and publishing your page:</strong> the contract with you (Art. 6(1)(b) GDPR).
         </li>
         <li>
-          <strong>Filling in your page from your CV,</strong> when you ask: the contract with you (Art. 6(1)(b)).
+          <strong>Filling in your page from your CV,</strong> when you ask, with or without an account: the contract
+          with you, or the steps you ask for before it (Art. 6(1)(b)).
         </li>
         <li>
           <strong>Sharing your page with companies hiring for roles close to your profile,</strong> and using where you
@@ -120,6 +129,10 @@ export default function PrivacyPage() {
           doesn&apos;t use it to train its models.
         </li>
         <li>Records of CV imports: with your account.</li>
+        <li>
+          Pages made from a CV without an account: a day, unless you claim them. The daily keys of those tries are
+          deleted the next day.
+        </li>
         <li>Your choices for companies: until you change them or delete your account.</li>
         <li>Visit counts: with the page owner&apos;s account. The daily keys are deleted the next day.</li>
         <li>

@@ -1,6 +1,7 @@
 import { randomBytes, randomUUID } from "node:crypto";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { pool } from "./db";
+import type { PageFacts } from "./report";
 import type { PortfolioConfig } from "./types";
 
 /**
@@ -66,10 +67,18 @@ export const getProfileOfUser = (userId: string) => one("select * from profiles 
  * Claims `username` for the user. Undefined if the name is taken (or the user already has a page).
  * `source`: where the user came from, for the funnel.
  */
-export const createProfile = (userId: string, username: string, draft: PortfolioConfig, source?: string) =>
+/** `review`: the sections to check, when the draft comes from a CV. */
+export const createProfile = (
+  userId: string,
+  username: string,
+  draft: PortfolioConfig,
+  source?: string,
+  review: string[] = [],
+) =>
   one(
-    "insert into profiles (user_id, username, draft, source) values ($1, $2, $3, $4) on conflict do nothing returning *",
-    [userId, username, draft, source ?? null],
+    `insert into profiles (user_id, username, draft, source, review) values ($1, $2, $3, $4, $5)
+     on conflict do nothing returning *`,
+    [userId, username, draft, source ?? null, review],
   );
 
 export const saveDraft = (userId: string, draft: PortfolioConfig, review: string[]) =>
@@ -85,6 +94,13 @@ export const publish = (userId: string, published: PortfolioConfig) =>
      where user_id = $1 returning *`,
     [userId, published],
   );
+
+/**
+ * Takes the page offline: its address shows "not found" until the next publish. The draft and the name stay, and
+ * so does first_published_at, so the funnel still counts the page as published once.
+ */
+export const unpublish = (userId: string) =>
+  one("update profiles set published = null where user_id = $1 returning *", [userId]);
 
 /** Where the editor's share dialog can send a page. */
 export const SHARE_PLACES = ["linkedin", "post", "github", "elsewhere"] as const;
@@ -105,6 +121,28 @@ export const saveMatching = (userId: string, consent: boolean, location: string 
 /** The phone number for the CV as a PDF; undefined removes it. */
 export const savePhone = (userId: string, phone: string | undefined) =>
   one("update profiles set phone = $2 where user_id = $1 returning *", [userId, phone ?? null]);
+
+// The report (admin/report)
+
+/** The parts of a page the report reads (lib/report.ts Facts), not its projects or photos. */
+const facts = (column: "draft" | "published") =>
+  `jsonb_strip_nulls(jsonb_build_object('profile', ${column}->'profile', 'openToWork', ${column}->'openToWork',
+     'topSkills', ${column}->'topSkills', 'skills', ${column}->'skills'))`;
+
+/**
+ * Every page, oldest first, with its choices for companies. Where they live is read only while they agree: they
+ * gave it to be matched with companies, and for nothing else.
+ */
+export async function reportPages() {
+  const { rows } = await pool.query<PageFacts>(
+    `select ${facts("draft")} as draft,
+       case when published is not null then ${facts("published")} end as published,
+       companies_consent_at is not null as agreed,
+       case when companies_consent_at is not null then nullif(trim(location), '') end as location
+     from profiles order by created_at`,
+  );
+  return rows;
+}
 
 // CV imports
 
@@ -136,6 +174,84 @@ export async function takeCvImport(userId: string): Promise<{ id: string } | { l
 /** Gives an import back when it failed on our side (the AI didn't answer). */
 export async function returnCvImport(id: string) {
   await pool.query("delete from cv_imports where id = $1", [id]);
+}
+
+// CV imports without an account
+
+/** Tries a visitor gets in 24 hours, and for the whole site: apart from the accounts' imports, so tries can't use those up. */
+export const GUEST_IMPORTS_PER_VISITOR = 2;
+export const GUEST_IMPORTS_PER_SITE = 200;
+/** How long the page made from the CV is kept, unclaimed. */
+const GUEST_DRAFT_TTL = "interval '24 hours'";
+
+const GUEST_VISITOR =
+  "select sha256(salt || convert_to('guest ' || $1, 'UTF8')) from visit_salts where day = current_date";
+
+/**
+ * Records a try for the visitor if both 24-hour limits allow it, in one statement like takeCvImport. Returns its
+ * id and the random token for its cookie, or which limit was reached.
+ */
+export async function takeGuestImport(
+  visitor: string,
+): Promise<{ id: string; token: string } | { limit: "visitor" | "site" }> {
+  await saltToday();
+  const token = randomBytes(24).toString("base64url");
+  const { rows } = await pool.query<{ id: string }>(
+    `insert into guest_imports (token, visitor)
+     select $2, (${GUEST_VISITOR})
+     where (select count(*) from guest_imports
+            where visitor = (${GUEST_VISITOR}) and created_at > now() - interval '24 hours') < $3
+       and (select count(*) from guest_imports where created_at > now() - interval '24 hours') < $4
+     returning id`,
+    [visitor, token, GUEST_IMPORTS_PER_VISITOR, GUEST_IMPORTS_PER_SITE],
+  );
+  if (rows[0]) return { id: rows[0].id, token };
+  const mine = await pool.query<{ n: number }>(
+    `select count(*)::int as n from guest_imports
+     where visitor = (${GUEST_VISITOR}) and created_at > now() - interval '24 hours'`,
+    [visitor],
+  );
+  return { limit: mine.rows[0].n >= GUEST_IMPORTS_PER_VISITOR ? "visitor" : "site" };
+}
+
+/** The page made by the try. */
+export async function saveGuestDraft(id: string, draft: PortfolioConfig) {
+  await pool.query("update guest_imports set draft = $2 where id = $1", [id, draft]);
+}
+
+/** Gives a try back when it failed on our side (the AI didn't answer). */
+export async function returnGuestImport(id: string) {
+  await pool.query("delete from guest_imports where id = $1", [id]);
+}
+
+/** The unclaimed page behind a cookie's token, if it's less than a day old. */
+export async function guestDraft(token: string) {
+  const { rows } = await pool.query<{ draft: PortfolioConfig }>(
+    `select draft from guest_imports
+     where token = $1 and draft is not null and user_id is null and created_at > now() - ${GUEST_DRAFT_TTL}`,
+    [token],
+  );
+  return rows[0]?.draft;
+}
+
+/** The page has moved to the user's account (or they turned it down): its copy here is deleted. */
+export async function claimGuestDraft(token: string, userId: string) {
+  await pool.query("update guest_imports set user_id = $2, draft = null where token = $1 and user_id is null", [
+    token,
+    userId,
+  ]);
+}
+
+/** A newer try replaces this one: its page is deleted. */
+export async function dropGuestDraft(token: string) {
+  await pool.query("update guest_imports set draft = null where token = $1", [token]);
+}
+
+/** Deletes the pages of tries more than a day old. */
+export async function forgetGuestDrafts() {
+  await pool.query(
+    `update guest_imports set draft = null where draft is not null and created_at < now() - ${GUEST_DRAFT_TTL}`,
+  );
 }
 
 // Site previews

@@ -1,17 +1,10 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { TextPage } from "@/components/site/TextPage";
-import { shares, sources, totalAccounts, weeks } from "@/lib/funnel";
-import { currentUser } from "@/lib/session";
+import { shares, sources, totals, weeks } from "@/lib/funnel";
+import { requireTeam } from "@/lib/session";
 import s from "./stats.module.css";
 
 export const metadata: Metadata = { title: "Stats — devtag", robots: { index: false } };
-
-/** Who may see the stats: the verified emails in STATS_EMAILS, comma-separated. */
-const ALLOWED = (process.env.STATS_EMAILS ?? "")
-  .split(",")
-  .map((email) => email.trim().toLowerCase())
-  .filter(Boolean);
 
 /** "12 · 40%": a count and its share of the step it comes from. */
 function Step({ n, of }: { n: number; of: number }) {
@@ -25,22 +18,24 @@ function Step({ n, of }: { n: number; of: number }) {
 
 /** The funnel, for devtag's own team: anyone else gets a 404. */
 export default async function StatsPage() {
-  const user = await currentUser();
-  if (!user?.emailVerified || !ALLOWED.includes(user.email.toLowerCase())) notFound();
+  await requireTeam();
 
-  const [accounts, byWeek, bySource, byPlace] = await Promise.all([totalAccounts(), weeks(), sources(), shares()]);
+  const [total, byWeek, bySource, byPlace] = await Promise.all([totals(), weeks(), sources(), shares()]);
 
   return (
     <TextPage command="devtag stats" title="Funnel">
       <p className={s.total}>
-        <strong>{accounts}</strong> accounts in total
+        <strong>{total.accounts}</strong> accounts, <strong>{total.pages}</strong> pages,{" "}
+        <strong>{total.published}</strong> published
+        {total.pages > 0 && ` (${Math.round((total.published / total.pages) * 100)}% of pages)`}
       </p>
       <h2>By week</h2>
       <p>
-        Visitors of the landing and login pages, each once a day; sign-in page: those who opened the login page
-        (counted since 7 November 2026), with their share of visitors, as accounts. Pages are grouped by the week
-        they were claimed; each step after that counts those pages, with its share of the step before (visited: of
-        published).
+        Visitors of the landing and login pages, each once a day. Tried: CV imports on the landing, without an account.
+        Sign-in page: visitors who opened the login page (counted since 7 November 2026). These and accounts show their
+        share of visitors. Pages are grouped by the week they were claimed; each step after that counts those pages,
+        with its share of the step before (visited: of published). Imported includes pages claimed with the one made on
+        the landing.
       </p>
       <div className={s.scroll}>
         <table className={s.table}>
@@ -48,6 +43,7 @@ export default async function StatsPage() {
             <tr>
               <th>Week of</th>
               <th>Visitors</th>
+              <th>Tried</th>
               <th>Sign-in page</th>
               <th>Accounts</th>
               <th>Pages</th>
@@ -62,6 +58,9 @@ export default async function StatsPage() {
               <tr key={w.week}>
                 <td>{w.week}</td>
                 <td>{w.visitors}</td>
+                <td>
+                  <Step n={w.tried} of={w.visitors} />
+                </td>
                 <td>
                   <Step n={w.login} of={w.visitors} />
                 </td>

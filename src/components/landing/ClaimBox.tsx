@@ -6,9 +6,26 @@ import s from "./ClaimBox.module.css";
 
 type Check = { state: "empty" } | { state: "checking" } | { state: "done"; available: boolean; error?: string };
 
+interface Props {
+  domain: string;
+  className?: string;
+  /** The name already in the box: /preview suggests one from the CV. */
+  initial?: string;
+  /** Under the box while it's empty. */
+  hint?: string;
+  /** The address as a text field above the button, with a pencil: /preview's panel, where it comes filled in. */
+  field?: boolean;
+}
+
 /** "https:// [yourname] .devtag.io [Claim →]": checks the name as you type, then goes to sign-up. */
-export function ClaimBox({ domain, className = "" }: { domain: string; className?: string }) {
-  const [name, setName] = useState("");
+export function ClaimBox({
+  domain,
+  className = "",
+  initial = "",
+  hint = "Pick your address, then fill in the page.",
+  field = false,
+}: Props) {
+  const [name, setName] = useState(initial);
   const [check, setCheck] = useState<Check>({ state: "empty" });
   const input = useRef<HTMLInputElement>(null);
   // On the landing, the profile picture at the top shows the initials of what's typed here.
@@ -32,7 +49,7 @@ export function ClaimBox({ domain, className = "" }: { domain: string; className
   const available = check.state === "done" && check.available;
 
   return (
-    <div className={`${s.wrap} ${className}`}>
+    <div className={`${s.wrap} ${field ? s.field : ""} ${className}`}>
       <form
         className={s.box}
         data-available={available || undefined}
@@ -63,6 +80,20 @@ export function ClaimBox({ domain, className = "" }: { domain: string; className
             }}
           />
           <span className={s.domain}>.{domain}</span>
+          {field && (
+            <svg
+              className={s.edit}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z" />
+            </svg>
+          )}
         </label>
         <button className={s.button}>Claim it →</button>
       </form>
@@ -71,7 +102,7 @@ export function ClaimBox({ domain, className = "" }: { domain: string; className
         data-state={check.state === "done" ? (available ? "ok" : "no") : check.state}
         aria-live="polite"
       >
-        {check.state === "empty" && "Pick your address, then fill in the page."}
+        {check.state === "empty" && hint}
         {check.state === "checking" && "checking…"}
         {check.state === "done" && (available ? `✓ ${name}.${domain} is free` : check.error)}
       </p>

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { TextPage } from "@/components/site/TextPage";
-import { CV_IMPORTS_PER_USER } from "@/lib/store";
+import { CV_IMPORTS_PER_USER, GUEST_IMPORTS_PER_VISITOR } from "@/lib/store";
 import { COMPANY, DISPLAY_DOMAIN, REPO_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -13,11 +13,12 @@ export default function TermsPage() {
 
   return (
     <TextPage command="cat terms.md" title="Terms">
-      <p>Effective date: 25 October 2026</p>
+      <p>Effective date: 6 November 2026</p>
       <p>
         These terms cover your use of devtag at {DISPLAY_DOMAIN} (the &ldquo;service&rdquo;), run by{" "}
         <strong>{COMPANY.name}</strong>, a company registered in Italy at {COMPANY.address} (&ldquo;we&rdquo;). By
-        signing in you accept them, together with our <a href="/privacy">privacy policy</a>.
+        signing in, or by trying the CV import without an account, you accept them, together with our{" "}
+        <a href="/privacy">privacy policy</a>.
       </p>
 
       <h2>1. The service</h2>
@@ -55,7 +56,8 @@ export default function TermsPage() {
       <h2>5. CV import</h2>
       <p>
         The CV import uses AI and can get things wrong. Check every section before you publish: you are responsible for
-        what your page says. Each account can import up to {CV_IMPORTS_PER_USER} CVs a day.
+        what your page says. Each account can import up to {CV_IMPORTS_PER_USER} CVs a day. Without an account, you can
+        try it {GUEST_IMPORTS_PER_VISITOR} times a day, and the page it makes is kept for a day for you to claim.
       </p>
 
       <h2>6. What&apos;s not allowed</h2>
